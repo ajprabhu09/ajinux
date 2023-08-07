@@ -8,10 +8,18 @@ edition = "2021"
 [dependencies]
 bootloader = "0.9.23"
 
+[dependencies.lazy_static]
+version = "1.0"
+features = ["spin_no_std"]
+
+
 [profile.dev]
 panic = "abort"
 [profile.release]
 panic = "abort"
+
+
+
 
 [package.metadata.bootimage]
 # The cargo subcommand that will be used for building the kernel.

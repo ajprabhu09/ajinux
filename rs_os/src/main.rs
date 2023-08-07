@@ -1,27 +1,38 @@
 #![no_std]
 #![no_main]
+mod writer;
+
 
 mod asm;
 mod vga;
-use core::panic::PanicInfo;
+mod sync;
+use core::{panic::PanicInfo, fmt::Write, ops::DerefMut};
+mod mystd;
 
+use mystd::vga_print::*;
+use sync::spinlock::Mutex;
+
+use lazy_static::__Deref;
 use vga::{ConsoleDisplay, Text, DEFAULT_BG_COLOR, DEFAULT_FG_COLOR};
+use writer::WRITER;
+
+use crate::{writer::set_color, vga::Color};
 static HELLO: &[u8] = b"Hello World!";
 
 /// This function is called on panic.
 #[panic_handler]
 fn panic(_info: &PanicInfo) -> ! {
-    let mut display = vga::VGADisplay::default();
-    display.put_bytes("ERROR: paniced at main".as_bytes());
+    set_color(Color::pack(Color::Black, Color::Red));
+    print!("{}", _info);
+
     loop {}
 }
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
-    let mut display = vga::VGADisplay::default();
-    // display.put_bytes("LOL".as_bytes());
-    // display.put_byte(unsafe { asm::add(60) } as u8);
-    display.put_bytes("HEllow\n \tWorld".as_bytes());
-    display.hide_cursor();
-    display.restore_cursor();
+    // write!(WRITER.deref_mut(), "lol");
+    let a = "123asd1".parse::<i32>();
+
+    a.unwrap();
+
     loop {}
 }

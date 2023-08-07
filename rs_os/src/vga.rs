@@ -42,12 +42,12 @@ pub enum Color {
 type PackedColor = u8;
 
 impl Color {
-    fn pack(left: Color, right: Color) -> PackedColor {
+    pub fn pack(left: Color, right: Color) -> PackedColor {
         let left = (left as u8) << 4;
         let right = right as u8;
         return left | right;
     }
-    fn unpack(packed: PackedColor) -> (Color, Color) {
+    pub fn unpack(packed: PackedColor) -> (Color, Color) {
         let fg_mask = 0xF as u8;
         let bg_mask = fg_mask << 4;
         let fg = packed & fg_mask;
@@ -89,13 +89,15 @@ impl VGABuffer {
     pub fn mmio<'b>(addr: *mut u8) -> &'b mut Self {
         unsafe { &mut *(addr as *mut Self) }
     }
-    pub unsafe fn set_at(&mut self, loc: (i32, i32), val: Text) {
+    pub fn set_at(&mut self, loc: (i32, i32), val: Text) {
         let addr = core::ptr::addr_of_mut!(self.buffer[loc.0 as usize][loc.1 as usize]);
-        addr.write_volatile(val);
+        unsafe{addr.write_volatile(val);}
     }
-    pub unsafe fn get_at(&self, loc: (i32, i32)) -> Text {
+    pub fn get_at(&self, loc: (i32, i32)) -> Text {
         let addr = core::ptr::addr_of!(self.buffer[loc.0 as usize][loc.1 as usize]);
-        return addr.read_volatile();
+        return unsafe {
+            addr.read_volatile()
+        };
     }
 }
 
@@ -160,11 +162,7 @@ pub fn bounds_check(loc: (i32, i32)) -> bool {
 
 impl ConsoleDisplay for VGADisplay {
     fn put_byte(&mut self, ch: u8) -> Result<(), ConsoleErrType> {
-        unsafe {
             let cursor = self.get_cursor();
-            if !bounds_check(cursor) {
-                return Err("outside display");
-            }
             match ch {
                 b'\n' => {
                     self.set_cursor((cursor.0 + 1, 0))?;
@@ -188,17 +186,13 @@ impl ConsoleDisplay for VGADisplay {
                     self.set_cursor((cursor.0, cursor.1 + 1))?;
                 }
             };
-            // let mut curr = self.get_cursor();
-            // curr.1 += 1;
-            // self.set_cursor(curr)?;
-        };
+
         Ok(())
     }
-
     fn put_bytes(&mut self, ch: &[u8]) -> Result<(), ConsoleErrType> {
         ch.iter().for_each(|ch| {
             self.put_byte(*ch);
-            delay(500000);
+            // delay(500000);
         });
         Ok(())
     }
