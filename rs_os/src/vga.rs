@@ -2,6 +2,8 @@ use core::{char, ops::DerefMut};
 
 use crate::asm::{self, add, iodelay};
 
+/// TODO: add more robust checks for api
+
 /* --- CRTC Register Manipulation --- */
 const CRTC_IDX_REG: u16 = 0x3d4;
 const CRTC_DATA_REG: u16 = 0x3d5;
@@ -151,15 +153,22 @@ pub fn delay(n: usize) {
     }
 }
 
+pub fn bounds_check(loc: (i32, i32)) -> bool {
+    return (0..BUFFER_HEIGHT).contains(&(loc.0 as usize))
+        && (0..BUFFER_WIDTH).contains(&(loc.1 as usize));
+}
+
 impl ConsoleDisplay for VGADisplay {
     fn put_byte(&mut self, ch: u8) -> Result<(), ConsoleErrType> {
         unsafe {
             let cursor = self.get_cursor();
-
+            if !bounds_check(cursor) {
+                return Err("outside display");
+            }
             match ch {
                 b'\n' => {
                     self.set_cursor((cursor.0 + 1, 0))?;
-                },
+                }
                 b'\x08' => {
                     // \b
                     self.set_cursor((cursor.0, cursor.1 - 1))?;
@@ -167,18 +176,17 @@ impl ConsoleDisplay for VGADisplay {
                         cursor,
                         Text::colored(b' ', self.curr_fg_color, self.curr_bg_color),
                     );
-                },
+                }
                 b'\r' => {
                     self.set_cursor((cursor.0, 0))?;
-                },
+                }
                 _ => {
                     self.buffer.set_at(
                         cursor,
                         Text::colored(ch, self.curr_fg_color, self.curr_bg_color),
                     );
                     self.set_cursor((cursor.0, cursor.1 + 1))?;
-                
-                },
+                }
             };
             // let mut curr = self.get_cursor();
             // curr.1 += 1;
@@ -196,10 +204,16 @@ impl ConsoleDisplay for VGADisplay {
     }
 
     fn draw_char(&mut self, loc: (i32, i32), ch: u8, color: u8) {
+        if !bounds_check(loc) {
+            return;
+        }
         unsafe { self.buffer.set_at(loc, Text::raw(ch, color)) }
     }
 
     fn get_char(&mut self, loc: (i32, i32)) -> Result<u8, ConsoleErrType> {
+        if !bounds_check(loc) {
+            return Err("outside display");
+        }
         unsafe { Ok(self.buffer.get_at(loc).ascii) }
     }
 
