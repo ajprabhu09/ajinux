@@ -91,13 +91,13 @@ impl VGABuffer {
     }
     pub fn set_at(&mut self, loc: (i32, i32), val: Text) {
         let addr = core::ptr::addr_of_mut!(self.buffer[loc.0 as usize][loc.1 as usize]);
-        unsafe{addr.write_volatile(val);}
+        unsafe {
+            addr.write_volatile(val);
+        }
     }
     pub fn get_at(&self, loc: (i32, i32)) -> Text {
         let addr = core::ptr::addr_of!(self.buffer[loc.0 as usize][loc.1 as usize]);
-        return unsafe {
-            addr.read_volatile()
-        };
+        return unsafe { addr.read_volatile() };
     }
 }
 
@@ -139,7 +139,10 @@ impl VGADisplay {
         for i in (BUFFER_HEIGHT - rows)..BUFFER_HEIGHT {
             for j in 0..BUFFER_WIDTH {
                 let loc0 = (i as i32, j as i32);
-                self.buffer.set_at(loc0, Text::colored(b' ', self.curr_fg_color, self.curr_bg_color));
+                self.buffer.set_at(
+                    loc0,
+                    Text::colored(b' ', self.curr_fg_color, self.curr_bg_color),
+                );
             }
         }
     }
@@ -182,58 +185,62 @@ pub fn bounds_check(loc: (i32, i32)) -> bool {
 
 impl ConsoleDisplay for VGADisplay {
     fn put_byte(&mut self, ch: u8) -> Result<(), ConsoleErrType> {
-            let cursor = self.get_cursor();
+        let cursor = self.get_cursor();
 
-            delay(100000);
+        delay(10000);
 
-            match ch {
-                b'\n' => {
-
-                    if cursor.0 == BUFFER_HEIGHT as i32 {
-                        self.scroll_down(1);
-                        self.set_cursor((cursor.0, 0))?;
-                    } else {
-                        self.set_cursor((cursor.0 + 1, 0))?;
-                    }
-                    
-                }
-                b'\x08' => {
-                    // \b
-                    if cursor.1 == 0 && cursor.0 == 0 {
-                        // Nothing should happen here
-                    } else if cursor.0 > 0 && cursor.1 == 0 {
-                        // TODO: this is complicated to handle
-                        // Either you double buffer the vga buffer and handle it correctly or write a very 
-                        // complicated logic here
-                        // YOU DECIDE.
-                        // for now moving to end of the previous line
-                        self.set_cursor((cursor.0 - 1, (BUFFER_WIDTH - 1) as i32))?;
-                    } else {
-                        self.set_cursor((cursor.0, cursor.1 - 1))?;
-                        self.buffer.set_at(
-                            (cursor.0, cursor.1 - 1),
-                            Text::colored(b' ', self.curr_fg_color, self.curr_bg_color),
-                        );
-                    }
-                    
-                }
-                b'\r' => {
+        match ch {
+            b'\n' => {
+                if cursor.0 == BUFFER_HEIGHT as i32 {
+                    self.scroll_down(1);
                     self.set_cursor((cursor.0, 0))?;
+                } else {
+                    self.set_cursor((cursor.0 + 1, 0))?;
                 }
-                _ => {
+            }
+            b'\x08' => {
+                // \b
+                if cursor.1 == 0 && cursor.0 == 0 {
+                    // Nothing should happen here
+                } else if cursor.0 > 0 && cursor.1 == 0 {
+                    // TODO: this is complicated to handle
+                    // Either you double buffer the vga buffer and handle it correctly or write a very
+                    // complicated logic here
+                    // YOU DECIDE.
+                    // for now moving to end of the previous line
+                    self.set_cursor((cursor.0 - 1, (BUFFER_WIDTH - 1) as i32))?;
+                } else {
+                    self.set_cursor((cursor.0, cursor.1 - 1))?;
+                    self.buffer.set_at(
+                        (cursor.0, cursor.1 - 1),
+                        Text::colored(b' ', self.curr_fg_color, self.curr_bg_color),
+                    );
+                }
+            }
+            b'\r' => {
+                self.set_cursor((cursor.0, 0))?;
+            }
+            _ => {
+                if cursor.0 == (BUFFER_HEIGHT as i32) {
+                    self.scroll_down(1);
+                    self.set_cursor(((BUFFER_HEIGHT - 1) as i32, 1));
+                    self.buffer.set_at(
+                        ((BUFFER_HEIGHT - 1) as i32, 0),
+                        Text::colored(ch, self.curr_fg_color, self.curr_bg_color),
+                    );
+                } else {
                     self.buffer.set_at(
                         cursor,
                         Text::colored(ch, self.curr_fg_color, self.curr_bg_color),
                     );
                     if cursor.1 == (BUFFER_WIDTH as i32) - 1 {
                         self.set_cursor((cursor.0 + 1, 0))?;
-                        
                     } else {
                         self.set_cursor((cursor.0, cursor.1 + 1))?;
-
                     }
                 }
-            };
+            }
+        };
 
         Ok(())
     }

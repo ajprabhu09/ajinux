@@ -1,7 +1,7 @@
 use core::{
     cell::UnsafeCell,
+    ops::{Deref, DerefMut},
     sync::atomic::{AtomicBool, Ordering},
-    ops::{Deref, DerefMut}
 };
 
 pub struct Mutex<T> {
@@ -28,7 +28,6 @@ impl<T> Mutex<T> {
         }
     }
 
-    
     pub fn lock<'a>(&mut self) -> MutexGuard<T> {
         loop {
             if let Ok(mutex) = self.try_lock() {

@@ -1,15 +1,12 @@
-
-
 use core::borrow::BorrowMut;
-use core::cell::{RefCell, Ref};
-use core::{cell::UnsafeCell, fmt::Write};
+use core::cell::{Ref, RefCell};
 use core::ops::{Deref, DerefMut};
+use core::{cell::UnsafeCell, fmt::Write};
 
-use crate::vga::{ConsoleDisplay, VGADisplay, Color};
+use crate::vga::{Color, ConsoleDisplay, VGADisplay};
 pub struct Writer<T: ConsoleDisplay> {
-    pub display: RefCell<T>
+    pub display: RefCell<T>,
 }
-
 
 impl core::fmt::Write for VGADisplay {
     fn write_str(&mut self, s: &str) -> core::fmt::Result {
@@ -18,10 +15,6 @@ impl core::fmt::Write for VGADisplay {
         })
     }
 }
-
-
-
-
 
 lazy_static::lazy_static! {
     pub static ref WRITER: Writer<VGADisplay> = Writer{
@@ -33,7 +26,4 @@ pub fn set_color(color: u8) {
     WRITER.display.borrow_mut().set_term_color(color);
 }
 
-
-unsafe impl Sync for Writer<VGADisplay> {
-
-}
+unsafe impl Sync for Writer<VGADisplay> {}
