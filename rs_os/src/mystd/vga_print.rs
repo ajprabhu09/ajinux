@@ -14,7 +14,7 @@ macro_rules! println {
         $crate::print!("\n")
     };
     ($($arg:tt)*) => {{
-        $crate::mystd::vga_print::print!("{}\n", format_args!($($arg)*));
+        $crate::print!("{}\n", format_args!($($arg)*));
     }};
 }
 
