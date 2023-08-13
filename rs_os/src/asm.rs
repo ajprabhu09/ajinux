@@ -60,3 +60,10 @@ pub unsafe fn inb(port: u16) -> u8 {
     );
     return al;
 }
+
+pub unsafe fn disable_interrupts() {
+    asm!("cli")
+}
+pub unsafe fn enable_interrupts() {
+    asm!("sti")
+}

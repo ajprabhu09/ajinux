@@ -1,7 +1,7 @@
 use core::{char, ops::DerefMut};
 
 use crate::asm::{self, add, iodelay};
-
+use crate::utils::bytes::*;
 /// TODO: add more robust checks for api
 
 /* --- CRTC Register Manipulation --- */
@@ -160,17 +160,6 @@ impl VGADisplay {
     }
 }
 
-#[repr(C)]
-#[derive(Copy, Clone)]
-struct Component {
-    lsb: u8,
-    msb: u8,
-}
-#[repr(C)]
-union TopLevel {
-    word: u16,
-    component: Component,
-}
 
 pub fn delay(n: usize) {
     for i in 0..n {

@@ -1,15 +1,18 @@
 #![no_std]
 #![no_main]
-mod writer;
 
+
+mod writer;
+mod utils;
 mod asm;
 mod sync;
+mod timer;
 mod vga;
 use core::{fmt::Write, ops::DerefMut, panic::PanicInfo};
 mod logging;
 
-use logging::vga_print::*;
 use logging::vga_log;
+use logging::vga_print::*;
 use sync::spinlock::Mutex;
 
 use lazy_static::__Deref;
@@ -35,7 +38,8 @@ pub extern "C" fn _start() -> ! {
     let a = "1231".parse::<i32>();
 
     for _ in 1..1000 {
-        info!("Starting ....");
+        error!("Starting ....");
+        let a: i32 = "12312aa3".parse().expect("lol");
     }
 
     a.unwrap();
