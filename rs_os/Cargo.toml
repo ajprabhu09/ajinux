@@ -17,7 +17,8 @@ features = ["spin_no_std"]
 panic = "abort"
 [profile.release]
 panic = "abort"
-
+[profile.test]
+panic = "unwind"
 
 
 

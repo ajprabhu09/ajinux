@@ -3,7 +3,7 @@ use core::cell::{Ref, RefCell};
 use core::ops::{Deref, DerefMut};
 use core::{cell::UnsafeCell, fmt::Write};
 
-use crate::vga::{Color, ConsoleDisplay, VGADisplay};
+use crate::devices::vga::{Color, ConsoleDisplay, VGADisplay};
 pub struct Writer<T: ConsoleDisplay> {
     pub display: RefCell<T>,
 }

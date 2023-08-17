@@ -1,6 +1,6 @@
 use core::{char, ops::DerefMut};
 
-use crate::asm::{self, add, iodelay};
+use crate::utils::asm::{self, add, iodelay};
 use crate::utils::bytes::*;
 /// TODO: add more robust checks for api
 
@@ -159,7 +159,6 @@ impl VGADisplay {
         self.set_cursor(self.cursor_saved).unwrap();
     }
 }
-
 
 pub fn delay(n: usize) {
     for i in 0..n {
