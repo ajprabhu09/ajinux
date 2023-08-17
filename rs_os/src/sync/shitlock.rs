@@ -18,7 +18,7 @@ impl<T> Racy<T> {
             data: UnsafeCell::from(data),
         }
     }
-    fn take(&self) -> RacyGuard<T> {
+    pub fn take(&self) -> RacyGuard<T> {
         RacyGuard { mutex: self }
     }
 }

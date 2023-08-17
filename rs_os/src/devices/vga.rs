@@ -1,5 +1,6 @@
 use core::{char, ops::DerefMut};
 
+
 use crate::utils::asm::{self, add, iodelay};
 use crate::utils::bytes::*;
 /// TODO: add more robust checks for api
@@ -86,7 +87,7 @@ pub struct VGABuffer {
 }
 
 impl VGABuffer {
-    pub fn mmio<'b>(addr: *mut u8) -> &'b mut Self {
+    pub const fn mmio<'b>(addr: *mut u8) -> &'b mut Self {
         unsafe { &mut *(addr as *mut Self) }
     }
     pub fn set_at(&mut self, loc: (i32, i32), val: Text) {
@@ -147,7 +148,7 @@ impl VGADisplay {
         }
     }
 
-    pub fn default() -> Self {
+    pub const fn default() -> Self {
         Self {
             cursor_saved: (0, 0),
             buffer: VGABuffer::mmio(0xb8000 as *mut u8),

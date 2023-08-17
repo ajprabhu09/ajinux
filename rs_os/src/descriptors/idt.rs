@@ -27,7 +27,7 @@ pub struct Entry<T> {
 macro_rules! gen_entry_impl {
     ($if: ty) => {
         impl Entry<$if> {
-            // pub fn 
+            // pub fn
         }
     };
 }
@@ -69,19 +69,13 @@ pub struct InterruptDescriptorTable {
 }
 
 impl InterruptDescriptorTable {
-    pub fn new() {
-
-    }
+    pub fn new() {}
 }
-
-
-
 
 #[test_case]
 pub fn test_idt_size() {
-    assert_eq!(256*16, core::mem::size_of::<InterruptDescriptorTable>());
+    assert_eq!(256 * 16, core::mem::size_of::<InterruptDescriptorTable>());
 }
-
 
 #[repr(C)]
 pub struct InterruptStackFrame {
@@ -94,14 +88,12 @@ pub struct InterruptStackFrame {
     pub stack_pointer: usize,
     /// The stack segment descriptor at the time of the interrupt (often zero in 64-bit mode).
     pub stack_segment: usize,
-
 }
 
 /// from x86_64 package https://github.com/rust-osdev/x86_64/blob/master/src/structures/idt.rs#L928
 pub type HandlerFunc = extern "x86-interrupt" fn(InterruptStackFrame);
 pub type HandlerFuncWithErrCode = extern "x86-interrupt" fn(InterruptStackFrame, error_code: u64);
-pub type PageFaultHandlerFunc =
-    extern "x86-interrupt" fn(InterruptStackFrame, error_code: u64);
+pub type PageFaultHandlerFunc = extern "x86-interrupt" fn(InterruptStackFrame, error_code: u64);
 pub type DivergingHandlerFunc = extern "x86-interrupt" fn(InterruptStackFrame) -> !;
 pub type DivergingHandlerFuncWithErrCode =
     extern "x86-interrupt" fn(InterruptStackFrame, error_code: u64) -> !;

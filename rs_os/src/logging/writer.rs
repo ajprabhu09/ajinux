@@ -4,26 +4,27 @@ use core::ops::{Deref, DerefMut};
 use core::{cell::UnsafeCell, fmt::Write};
 
 use crate::devices::vga::{Color, ConsoleDisplay, VGADisplay};
+use crate::sync::shitlock::Racy;
 pub struct Writer<T: ConsoleDisplay> {
-    pub display: RefCell<T>,
+    pub display: T,
+}
+lazy_static::lazy_static! {
+    pub static ref WRITER: Racy<Writer<VGADisplay>> = Racy::from(Writer{
+        display: VGADisplay::default(),
+    });
 }
 
-impl core::fmt::Write for VGADisplay {
+pub fn set_color(color: u8) {
+    WRITER.take().display.set_term_color(color);
+}
+
+impl<T> core::fmt::Write for Writer<T>
+where
+    T: ConsoleDisplay,
+{
     fn write_str(&mut self, s: &str) -> core::fmt::Result {
-        self.put_bytes(s.as_bytes()).map_err(|err| {
+        self.display.put_bytes(s.as_bytes()).map_err(|err| {
             panic!("{:?}", err);
         })
     }
 }
-
-lazy_static::lazy_static! {
-    pub static ref WRITER: Writer<VGADisplay> = Writer{
-        display: RefCell::from(VGADisplay::default()),
-    };
-}
-
-pub fn set_color(color: u8) {
-    WRITER.display.borrow_mut().set_term_color(color);
-}
-
-unsafe impl Sync for Writer<VGADisplay> {}
