@@ -1,5 +1,7 @@
 use core::arch::asm;
 
+use crate::descriptors::idt::{InterruptDescriptorTable, InterruptDescriptorPointer};
+
 /// Example
 pub fn add(a: i64) -> i64 {
     let o: i64;
@@ -68,4 +70,6 @@ pub unsafe fn enable_interrupts() {
     asm!("sti")
 }
 
-pub unsafe fn lidt() {}
+pub unsafe fn lidt(idt: &InterruptDescriptorPointer) {
+    asm!("lidt ({})", in(reg) idt,  options(att_syntax, nostack));
+}

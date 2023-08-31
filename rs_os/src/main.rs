@@ -55,7 +55,8 @@ pub extern "C" fn _start() -> ! {
 
 pub fn kernel_main() {
     interrupts::interrupt_setup();
-
+    let a: i32 = "123123@@".parse().unwrap();
+    println!("GHellow {:?}", a);
     // unsafe { utils::asm::enable_interrupts() }; // this fails if no handler is installed
 }
 

@@ -21,6 +21,9 @@ panic = "abort"
 panic = "unwind"
 
 
+[build-dependencies]
+cc = "1.0"
+
 
 [package.metadata.bootimage]
 # The cargo subcommand that will be used for building the kernel.

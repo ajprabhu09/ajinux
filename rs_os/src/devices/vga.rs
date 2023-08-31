@@ -1,6 +1,5 @@
 use core::{char, ops::DerefMut};
 
-
 use crate::utils::asm::{self, add, iodelay};
 use crate::utils::bytes::*;
 /// TODO: add more robust checks for api
@@ -236,7 +235,6 @@ impl ConsoleDisplay for VGADisplay {
     fn put_bytes(&mut self, ch: &[u8]) -> Result<(), ConsoleErrType> {
         ch.iter().for_each(|ch| {
             self.put_byte(*ch);
-            // delay(500000);
         });
         Ok(())
     }

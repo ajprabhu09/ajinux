@@ -10,3 +10,9 @@ pub union TopLevel {
     pub word: u16,
     pub component: Component,
 }
+
+#[repr(C)]
+pub union ToplevelG<W: Copy, C: Copy, const N: usize> {
+    pub word: W,
+    pub component: [C; N],
+}
