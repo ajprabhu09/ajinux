@@ -12,24 +12,18 @@ mod interrupts;
 mod sync;
 mod utils;
 
-use core::{fmt::Write, ops::DerefMut, panic::PanicInfo};
+use core::{panic::PanicInfo};
 mod logging;
 
-use logging::vga_log;
-use logging::vga_print::*;
-use logging::writer;
-use sync::spinlock::Mutex;
 
-use devices::vga::{
-    ConsoleDisplay, Text, BUFFER_HEIGHT, BUFFER_WIDTH, DEFAULT_BG_COLOR, DEFAULT_FG_COLOR,
-};
-use writer::WRITER;
+
+use logging::writer;
+
 
 use crate::{
-    devices::vga::{delay, Color},
+    devices::vga::{Color},
     writer::set_color,
 };
-static HELLO: &[u8] = b"Hello World!";
 
 /// This function is called on panic.
 #[panic_handler]

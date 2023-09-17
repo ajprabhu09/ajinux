@@ -11,6 +11,7 @@ pub union TopLevel {
     pub component: Component,
 }
 
+#[allow(dead_code)]
 #[repr(C)]
 pub union ToplevelG<W: Copy, C: Copy, const N: usize> {
     pub word: W,

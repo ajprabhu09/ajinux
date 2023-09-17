@@ -12,7 +12,7 @@ pub struct Mutex<T> {
 pub struct MutexGuard<'a, T> {
     mutex: &'a Mutex<T>,
 }
-
+#[allow(dead_code)]
 impl<T> Mutex<T> {
     pub fn from(data: T) -> Self {
         Self {

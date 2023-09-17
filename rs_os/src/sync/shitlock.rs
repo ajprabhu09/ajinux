@@ -1,7 +1,6 @@
 use core::{
     cell::UnsafeCell,
     ops::{Deref, DerefMut},
-    sync::atomic::{AtomicBool, Ordering},
 };
 
 pub struct Racy<T> {

@@ -2,8 +2,8 @@ use core::arch::asm;
 
 
 pub unsafe fn outb(port: u16, val: u8) {
-    let dx: u16;
-    let al: u8;
+    let _dx: u16;
+    let _al: u8;
 
     asm!(
         "movw {0:x}, %dx",
@@ -11,8 +11,8 @@ pub unsafe fn outb(port: u16, val: u8) {
         "out %al, %dx",
         in(reg) port,
         in(reg_byte) val,
-        out("dx") dx,
-        out("al") al,
+        out("dx") _dx,
+        out("al") _al,
         options(att_syntax)
     );
 }
@@ -28,23 +28,25 @@ pub unsafe fn iodelay() {
 }
 
 pub unsafe fn inb(port: u16) -> u8 {
-    let dx: u16;
+    let _dx: u16;
     let al: u8;
     asm!(
         "xorq %rax, %rax",
         "movw {0:x}, %dx",
         "in %dx, %al",
         in(reg) port,
-        out("dx") dx,
+        out("dx") _dx,
         out("al") al,
         options(att_syntax, nostack),
     );
     return al;
 }
 
+#[allow(dead_code)]
 pub unsafe fn disable_interrupts() {
     asm!("cli")
 }
+#[allow(dead_code)]
 pub unsafe fn enable_interrupts() {
     asm!("sti")
 }

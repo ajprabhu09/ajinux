@@ -1,9 +1,9 @@
-use core::borrow::BorrowMut;
-use core::cell::{Ref, RefCell};
-use core::ops::{Deref, DerefMut};
-use core::{cell::UnsafeCell, fmt::Write};
 
-use crate::devices::vga::{Color, ConsoleDisplay, VGADisplay};
+
+
+
+
+use crate::devices::vga::{ConsoleDisplay, VGADisplay};
 use crate::sync::shitlock::Racy;
 pub struct Writer<T: ConsoleDisplay> {
     pub display: T,

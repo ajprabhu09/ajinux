@@ -1,6 +1,6 @@
-use core::{char, ops::DerefMut};
 
-use crate::utils::asm::{self, iodelay};
+
+use crate::utils::asm::{self};
 use crate::utils::bytes::*;
 /// TODO: add more robust checks for api
 
@@ -18,6 +18,7 @@ pub struct Text {
 }
 #[repr(u8)]
 #[derive(Clone, Copy)]
+#[allow(dead_code)]
 pub enum Color {
     Black = 0x0,
     Blue = 0x1,
@@ -59,6 +60,7 @@ impl Color {
     }
 }
 
+#[allow(dead_code)]
 impl Text {
     pub fn colored(v: u8, fg: Color, bg: Color) -> Self {
         Self {
@@ -123,6 +125,7 @@ pub trait ConsoleDisplay {
     fn get_cursor(&mut self) -> (i32, i32);
     fn hide_cursor(&mut self);
 }
+#[allow(dead_code)]
 impl VGADisplay {
     /// Non buffered scrolling so all the previos data is lost
     pub fn scroll_down(&mut self, rows: usize) {
@@ -155,13 +158,15 @@ impl VGADisplay {
             curr_fg_color: DEFAULT_FG_COLOR,
         }
     }
+
+
     pub fn restore_cursor(&mut self) {
         self.set_cursor(self.cursor_saved).unwrap();
     }
 }
 
 pub fn delay(n: usize) {
-    for i in 0..n {
+    for _i in 0..n {
         unsafe { asm::iodelay() };
     }
 }
@@ -211,7 +216,7 @@ impl ConsoleDisplay for VGADisplay {
             _ => {
                 if cursor.0 == (BUFFER_HEIGHT as i32) {
                     self.scroll_down(1);
-                    self.set_cursor(((BUFFER_HEIGHT - 1) as i32, 1));
+                    self.set_cursor(((BUFFER_HEIGHT - 1) as i32, 1)).expect("invalid set cursor call");
                     self.buffer.set_at(
                         ((BUFFER_HEIGHT - 1) as i32, 0),
                         Text::colored(ch, self.curr_fg_color, self.curr_bg_color),
@@ -234,7 +239,7 @@ impl ConsoleDisplay for VGADisplay {
     }
     fn put_bytes(&mut self, ch: &[u8]) -> Result<(), ConsoleErrType> {
         ch.iter().for_each(|ch| {
-            self.put_byte(*ch);
+            self.put_byte(*ch).expect("unable to put bytes");
         });
         Ok(())
     }
@@ -243,14 +248,14 @@ impl ConsoleDisplay for VGADisplay {
         if !bounds_check(loc) {
             return;
         }
-        unsafe { self.buffer.set_at(loc, Text::raw(ch, color)) }
+       self.buffer.set_at(loc, Text::raw(ch, color))
     }
 
     fn get_char(&mut self, loc: (i32, i32)) -> Result<u8, ConsoleErrType> {
         if !bounds_check(loc) {
             return Err("outside display");
         }
-        unsafe { Ok(self.buffer.get_at(loc).ascii) }
+        Ok(self.buffer.get_at(loc).ascii)
     }
 
     fn set_term_color(&mut self, color: PackedColor) {
