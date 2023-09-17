@@ -20,5 +20,9 @@ macro_rules! println {
 #[doc(hidden)]
 pub fn _print(args: fmt::Arguments) {
     use core::fmt::Write;
-    WRITER.take().borrow_mut().write_fmt(args).expect("failed to write during _print");
+    WRITER
+        .take()
+        .borrow_mut()
+        .write_fmt(args)
+        .expect("failed to write during _print");
 }

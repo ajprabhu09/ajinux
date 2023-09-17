@@ -1,6 +1,5 @@
 use crate::utils::asm::{self, iodelay};
 
-
 pub struct Port(u16);
 
 #[allow(dead_code)]
@@ -13,12 +12,6 @@ impl Port {
     }
 
     pub fn read_byte(&self) -> u8 {
-        unsafe {
-            asm::inb(self.0)
-        }
+        unsafe { asm::inb(self.0) }
     }
 }
-
-
-
-

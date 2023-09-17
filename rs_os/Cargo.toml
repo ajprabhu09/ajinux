@@ -6,6 +6,7 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+bitfield-struct = "0.5.4"
 bootloader = "0.9.23"
 
 [dependencies.lazy_static]
@@ -33,7 +34,7 @@ build-command = ["build"]
 # The command invoked with the created bootimage (the "{}" will be replaced
 # with the path to the bootable disk image)
 # Applies to `bootimage run` and `bootimage runner`
-run-command = ["qemu-system-x86_64", "-drive", "format=raw,file={}"]
+run-command = ["qemu-system-x86_64", "-drive", "format=raw,file={}", "-no-reboot"]
 
 # Additional arguments passed to the run command for non-test executables
 # Applies to `bootimage run` and `bootimage runner`

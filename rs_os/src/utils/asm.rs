@@ -1,5 +1,6 @@
 use core::arch::asm;
 
+use crate::{descriptors::gdt::GdtPointer, info, println};
 
 pub unsafe fn outb(port: u16, val: u8) {
     let _dx: u16;
@@ -49,6 +50,21 @@ pub unsafe fn disable_interrupts() {
 #[allow(dead_code)]
 pub unsafe fn enable_interrupts() {
     asm!("sti")
+}
+
+#[allow(dead_code)]
+pub unsafe fn lgdt(gdt_p: &GdtPointer) {
+    asm!("lgdt [{}]", in(reg) gdt_p, options(readonly, nostack, preserves_flags));
+}
+#[allow(dead_code)]
+pub unsafe fn sgdt() -> GdtPointer {
+    let pointer: GdtPointer = GdtPointer {
+        size: 0,
+        offset: 0 as *const _,
+    };
+    asm!("sgdt [{}]", in(reg) &pointer, options(readonly, nostack, preserves_flags));
+    info!(" Pointer {:#?}", pointer);
+    return pointer;
 }
 
 // pub unsafe fn lidt(idt: &InterruptDescriptorPointer) {

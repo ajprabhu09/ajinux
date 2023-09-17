@@ -5,27 +5,20 @@
 #![reexport_test_harness_main = "test_main"]
 #![feature(abi_x86_interrupt)]
 #![feature(const_mut_refs)]
-
 #![allow(clippy::empty_loop)]
 #![allow(clippy::needless_return)]
+mod addr;
 mod descriptors;
 mod devices;
 mod interrupts;
 mod sync;
 mod utils;
-
-use core::{panic::PanicInfo};
+use core::panic::PanicInfo;
 mod logging;
-
-
 
 use logging::writer;
 
-
-use crate::{
-    devices::vga::{Color},
-    writer::set_color,
-};
+use crate::{devices::vga::Color, writer::set_color};
 
 /// This function is called on panic.
 #[panic_handler]

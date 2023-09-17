@@ -1,8 +1,3 @@
-
-
-
-
-
 use crate::devices::vga::{ConsoleDisplay, VGADisplay};
 use crate::sync::shitlock::Racy;
 pub struct Writer<T: ConsoleDisplay> {

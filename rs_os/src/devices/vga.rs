@@ -1,5 +1,3 @@
-
-
 use crate::utils::asm::{self};
 use crate::utils::bytes::*;
 /// TODO: add more robust checks for api
@@ -159,7 +157,6 @@ impl VGADisplay {
         }
     }
 
-
     pub fn restore_cursor(&mut self) {
         self.set_cursor(self.cursor_saved).unwrap();
     }
@@ -180,7 +177,7 @@ impl ConsoleDisplay for VGADisplay {
     fn put_byte(&mut self, ch: u8) -> Result<(), ConsoleErrType> {
         let cursor = self.get_cursor();
 
-        delay(10000);
+        // delay(10000);
 
         match ch {
             b'\n' => {
@@ -216,7 +213,8 @@ impl ConsoleDisplay for VGADisplay {
             _ => {
                 if cursor.0 == (BUFFER_HEIGHT as i32) {
                     self.scroll_down(1);
-                    self.set_cursor(((BUFFER_HEIGHT - 1) as i32, 1)).expect("invalid set cursor call");
+                    self.set_cursor(((BUFFER_HEIGHT - 1) as i32, 1))
+                        .expect("invalid set cursor call");
                     self.buffer.set_at(
                         ((BUFFER_HEIGHT - 1) as i32, 0),
                         Text::colored(ch, self.curr_fg_color, self.curr_bg_color),
@@ -248,7 +246,7 @@ impl ConsoleDisplay for VGADisplay {
         if !bounds_check(loc) {
             return;
         }
-       self.buffer.set_at(loc, Text::raw(ch, color))
+        self.buffer.set_at(loc, Text::raw(ch, color))
     }
 
     fn get_char(&mut self, loc: (i32, i32)) -> Result<u8, ConsoleErrType> {

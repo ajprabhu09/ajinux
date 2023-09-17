@@ -1,4 +1,1 @@
-
-
-pub fn interrupt_setup() {
-}
+pub fn interrupt_setup() {}
