@@ -46,10 +46,10 @@ impl Color {
     pub fn pack(left: Color, right: Color) -> PackedColor {
         let left = (left as u8) << 4;
         let right = right as u8;
-        return left | right;
+        left | right
     }
     pub fn unpack(packed: PackedColor) -> (Color, Color) {
-        let fg_mask = 0xF as u8;
+        let fg_mask: u8 = 0xF;
         let bg_mask = fg_mask << 4;
         let fg = packed & fg_mask;
         let bg = (packed & bg_mask) >> 4;

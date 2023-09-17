@@ -6,6 +6,8 @@
 #![feature(abi_x86_interrupt)]
 #![feature(const_mut_refs)]
 
+#![allow(clippy::empty_loop)]
+#![allow(clippy::needless_return)]
 mod descriptors;
 mod devices;
 mod interrupts;
@@ -41,6 +43,7 @@ pub extern "C" fn _start() -> ! {
     test_main();
 
     kernel_main();
+
     loop {}
 }
 

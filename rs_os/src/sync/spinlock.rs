@@ -28,7 +28,7 @@ impl<T> Mutex<T> {
         }
     }
 
-    pub fn lock<'a>(&mut self) -> MutexGuard<T> {
+    pub fn lock(&mut self) -> MutexGuard<T> {
         loop {
             if let Ok(mutex) = self.try_lock() {
                 return mutex;
