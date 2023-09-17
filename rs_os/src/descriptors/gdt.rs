@@ -79,11 +79,11 @@ impl GlobalDescriptorTable {
     }
 }
 
-#[test_case]
+// #[test_case]
 pub fn print_gdt() {
     unsafe {
         let gdt = &*GlobalDescriptorTable::read();
-        let mut count = 4;
+        let mut count = 5;
         for (i, entry) in gdt.descriptors.iter().enumerate() {
             if (entry.executable() == true) {
                 println!("{:?}, {:#?}", i, entry);

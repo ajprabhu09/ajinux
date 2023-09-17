@@ -17,6 +17,7 @@ use core::panic::PanicInfo;
 mod logging;
 
 use logging::writer;
+use utils::asm;
 
 use crate::{devices::vga::Color, writer::set_color};
 
@@ -43,6 +44,7 @@ pub extern "C" fn _start() -> ! {
 pub fn kernel_main() {
     interrupts::interrupt_setup();
     // unsafe { utils::asm::enable_interrupts() }; // this fails if no handler is installed
+    unsafe { asm::int3() };
 }
 
 #[cfg(test)]

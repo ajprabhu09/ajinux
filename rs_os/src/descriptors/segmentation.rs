@@ -9,7 +9,7 @@ use core::arch::asm;
 
 use crate::info;
 
-trait GetReg {
+pub trait GetReg {
     fn get_reg() -> u16;
 }
 
@@ -24,7 +24,7 @@ macro_rules! get_reg_impl {
                 return res;
             }
         }
-        
+
         #[test_case]
         pub fn test_cs_get() {
             info!(concat!($reg,": {:?}"), <$regtyp>::get_reg());
@@ -34,4 +34,3 @@ macro_rules! get_reg_impl {
 
 get_reg_impl!("cs", CS);
 get_reg_impl!("ds", DS);
-
