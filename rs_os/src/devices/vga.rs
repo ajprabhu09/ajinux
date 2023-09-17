@@ -1,6 +1,6 @@
 use core::{char, ops::DerefMut};
 
-use crate::utils::asm::{self, add, iodelay};
+use crate::utils::asm::{self, iodelay};
 use crate::utils::bytes::*;
 /// TODO: add more robust checks for api
 

@@ -1,21 +1,6 @@
 use core::arch::asm;
 
-use crate::descriptors::idt::{InterruptDescriptorTable, InterruptDescriptorPointer};
 
-/// Example
-pub fn add(a: i64) -> i64 {
-    let o: i64;
-    unsafe {
-        asm!(
-            "movq {i1}, {o1}",
-            "addq $5, {o1}",
-            o1 = out(reg) o,
-            i1 = in(reg) a,
-            options(att_syntax)
-        );
-    }
-    return o;
-}
 pub unsafe fn outb(port: u16, val: u8) {
     let dx: u16;
     let al: u8;
@@ -43,12 +28,6 @@ pub unsafe fn iodelay() {
 }
 
 pub unsafe fn inb(port: u16) -> u8 {
-    // .global inb
-    // inb:
-    //     xorl %eax, %eax
-    //     movw 4(%esp), %dx
-    //     in %dx, %al
-    //     ret
     let dx: u16;
     let al: u8;
     asm!(
@@ -70,6 +49,6 @@ pub unsafe fn enable_interrupts() {
     asm!("sti")
 }
 
-pub unsafe fn lidt(idt: &InterruptDescriptorPointer) {
-    asm!("lidt ({})", in(reg) idt,  options(att_syntax, nostack));
-}
+// pub unsafe fn lidt(idt: &InterruptDescriptorPointer) {
+//     asm!("lidt ({})", in(reg) idt,  options(att_syntax, nostack));
+// }
