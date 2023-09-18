@@ -1,8 +1,8 @@
-use crate::{descriptors::{idt::*, idt::ExcptionStackFrame}, println};
+use crate::{descriptors::{idt::*}, println};
  
 
 
-extern "x86-interrupt" fn bkpt_handle2(frame: ExcptionStackFrame) {
+extern "x86-interrupt" fn bkpt_handle2(frame: ExceptionStackFrame) {
     println!("{:#?}", frame);
 }
 static mut _IDT: InterruptDescriptorTable = InterruptDescriptorTable::new();

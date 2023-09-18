@@ -82,17 +82,13 @@ pub unsafe fn sgdt() -> GdtPointer {
 pub unsafe fn int3() {
     asm!("int3")
 }
-// #[allow(dead_code)]
-// pub unsafe fn sidt() -> DescriptorTablePointer {
-//     let pointer: DescriptorTablePointer = DescriptorTablePointer {
-//         limit: 0,
-//         base: VirtAddr::new(0),
-//     };
-//     asm!("sidt [{}]", in(reg) &pointer, options(readonly, nostack, preserves_flags));
-//     info!(" Pointer {:#?}", pointer);
-//     return pointer;
-// }
-
-// pub unsafe fn lidt(idt: &InterruptDescriptorPointer) {
-//     asm!("lidt ({})", in(reg) idt,  options(att_syntax, nostack));
-// }
+#[allow(dead_code)]
+pub unsafe fn sidt() -> DescriptorPointer {
+    let pointer: DescriptorPointer = DescriptorPointer {
+        size: 0,
+        offset: 0,
+    };
+    asm!("sidt [{}]", in(reg) &pointer, options(readonly, nostack, preserves_flags));
+    info!(" Pointer {:#?}", pointer);
+    return pointer;
+}
