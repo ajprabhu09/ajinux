@@ -71,15 +71,15 @@ pub struct Entry<T> {
 }
 impl<T> Entry<T> {
     pub const fn empty() -> Self {
-        Self {
+        Entry {
             offset_low: 0,
             segment_selector: 0,
-            settings: IdtSettings::new().with_gate_type(GateType::TrapGate),
+            settings: IdtSettings(0b1110_0000_0000),
             offset_middle: 0,
             offset_high: 0,
             _reserved: 0,
             _pd: PhantomData,
-        }
+        } 
     }
 }
 
@@ -105,14 +105,15 @@ impl<T> Debug for Entry<T> {
 macro_rules! impl_entry_builder {
     ($funct:ty) => {
         impl Entry<$funct> {
-            pub fn set_handler_func(&mut self, func: $funct) {
-                let ptr = func as u64;
+            #[inline]
+            pub fn set_handler_fn(&mut self, handler: $funct) {
+                let ptr = handler as u64;
                 let lower = ptr as u16;
                 let middle = (ptr >> 16) as u16;
                 let upper = (ptr >> 32) as u32;
                 (self.offset_low, self.offset_middle, self.offset_high) = (lower, middle, upper);
 
-                self.offset_high = (0xFFFF << 16) | self.offset_high;
+                self.offset_high = self.offset_high;
                 self.settings = self
                     .settings
                     .with_present(true)
@@ -132,9 +133,10 @@ pub fn test_idt_entry_size() {
 
 #[test_case]
 pub fn test_idt_size() {
-    assert_eq!(core::mem::size_of::<IDT>(), 16 * 256);
+    assert_eq!(core::mem::size_of::<InterruptDescriptorTable>(), 16 * 256);
 }
 #[derive(Debug, Clone, Copy)]
+#[repr(C)]
 pub struct ExcptionStackFrame {
     pub instruction_pointer: u64,
 
@@ -160,14 +162,14 @@ impl_entry_builder!(HandlerFuncWithErrCode);
 // impl_entry_builder!(PageFaultHandlerFunc);
 impl_entry_builder!(DivergingHandlerFunc);
 impl_entry_builder!(DivergingHandlerFuncWithErrCode);
-// pub struct IDT {
+// pub struct InterruptDescriptorTable {
 //     entries: [IdtEntry<HandlerFn>; 256],
 // }
 
 #[derive(Clone, Debug)]
 #[repr(C)]
 #[repr(align(16))]
-pub struct IDT {
+pub struct InterruptDescriptorTable {
     pub divide_error: Entry<HandlerFunc>,
     pub debug: Entry<HandlerFunc>,
     pub non_maskable_interrupt: Entry<HandlerFunc>,
@@ -175,52 +177,41 @@ pub struct IDT {
     pub overflow: Entry<HandlerFunc>,
     pub bound_range_exceeded: Entry<HandlerFunc>,
     pub invalid_opcode: Entry<HandlerFunc>,
-
     pub device_not_available: Entry<HandlerFunc>,
     pub double_fault: Entry<DivergingHandlerFuncWithErrCode>,
     coprocessor_segment_overrun: Entry<HandlerFunc>,
-
     pub invalid_tss: Entry<HandlerFuncWithErrCode>,
     pub segment_not_present: Entry<HandlerFuncWithErrCode>,
-
     pub stack_segment_fault: Entry<HandlerFuncWithErrCode>,
-
     pub general_protection_fault: Entry<HandlerFuncWithErrCode>,
-
     pub page_fault: Entry<PageFaultHandlerFunc>,
-
     reserved_1: Entry<HandlerFunc>,
     pub x87_floating_point: Entry<HandlerFunc>,
     pub alignment_check: Entry<HandlerFuncWithErrCode>,
-
     pub machine_check: Entry<DivergingHandlerFunc>, // DivergingHandlerFunc
-
     pub simd_floating_point: Entry<HandlerFunc>,
-
     pub virtualization: Entry<HandlerFunc>,
-
-    pub cp_protection_exception: Entry<HandlerFuncWithErrCode>,
-
-    reserved_2: [Entry<HandlerFunc>; 6],
-
-    pub hv_injection_exception: Entry<HandlerFunc>,
-
+    reserved_2: [Entry<HandlerFunc>; 8],
     pub vmm_communication_exception: Entry<HandlerFuncWithErrCode>,
-
     pub security_exception: Entry<HandlerFuncWithErrCode>,
-
     reserved_3: Entry<HandlerFunc>,
-
     interrupts: [Entry<HandlerFunc>; 256 - 32],
 }
 
-pub struct IDTPointer {
-    size: u16,
-    offset: *const IDT,
+#[repr(C, packed(2))]
+#[derive(Debug)]
+pub struct DescriptorPointer{
+    pub size: u16,
+    pub offset: u64,
 }
 
-impl IDT {
-    pub const fn default() -> Self {
+#[test_case]
+pub fn test_idt_pointer_size() {
+    assert_eq!(core::mem::size_of::<DescriptorPointer>(), 10);
+}
+
+impl InterruptDescriptorTable {
+    pub const fn new() -> Self {
         Self {
             divide_error: Entry::empty(),
             debug: Entry::empty(),
@@ -243,19 +234,19 @@ impl IDT {
             machine_check: Entry::empty(),
             simd_floating_point: Entry::empty(),
             virtualization: Entry::empty(),
-            cp_protection_exception: Entry::empty(),
-            reserved_2: [Entry::empty(); 6],
-            hv_injection_exception: Entry::empty(),
+            reserved_2: [Entry::empty(); 8],
             vmm_communication_exception: Entry::empty(),
             security_exception: Entry::empty(),
             reserved_3: Entry::empty(),
             interrupts: [Entry::empty(); 256 - 32],
         }
     }
-    pub fn load(&self) {
-        let ptr = IDTPointer {
-            size: core::mem::size_of::<IDT>() as u16 - 1,
-            offset: self as *const _,
+
+
+    pub fn load(&'static self) {
+        let ptr:DescriptorPointer = DescriptorPointer {
+            size: 4095,
+            offset: self as *const _ as  u64,
         };
 
         unsafe { lidt(&ptr) };

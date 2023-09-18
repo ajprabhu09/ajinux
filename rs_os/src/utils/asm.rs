@@ -1,7 +1,9 @@
 use core::arch::asm;
 
+// use x86_64::{structures::DescriptorTablePointer, VirtAddr};
+
 use crate::{
-    descriptors::{gdt::GdtPointer, idt::IDTPointer},
+    descriptors::{gdt::GdtPointer, idt::DescriptorPointer},
     info, println,
 };
 
@@ -61,8 +63,9 @@ pub unsafe fn lgdt(gdt_p: &GdtPointer) {
 }
 
 #[allow(dead_code)]
-pub unsafe fn lidt(gdt_p: &IDTPointer) {
-    asm!("lidt [{}]", in(reg) gdt_p, options(readonly, nostack, preserves_flags));
+#[inline]
+pub unsafe fn lidt(idt_p: &DescriptorPointer) {
+    asm!("lidt [{}]", in(reg) idt_p, options(readonly, nostack, preserves_flags));
 }
 
 #[allow(dead_code)]
@@ -79,6 +82,16 @@ pub unsafe fn sgdt() -> GdtPointer {
 pub unsafe fn int3() {
     asm!("int3")
 }
+// #[allow(dead_code)]
+// pub unsafe fn sidt() -> DescriptorTablePointer {
+//     let pointer: DescriptorTablePointer = DescriptorTablePointer {
+//         limit: 0,
+//         base: VirtAddr::new(0),
+//     };
+//     asm!("sidt [{}]", in(reg) &pointer, options(readonly, nostack, preserves_flags));
+//     info!(" Pointer {:#?}", pointer);
+//     return pointer;
+// }
 
 // pub unsafe fn lidt(idt: &InterruptDescriptorPointer) {
 //     asm!("lidt ({})", in(reg) idt,  options(att_syntax, nostack));
