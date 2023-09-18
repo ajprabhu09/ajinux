@@ -7,6 +7,7 @@
 #![feature(const_mut_refs)]
 #![allow(clippy::empty_loop)]
 #![allow(clippy::needless_return)]
+
 mod addr;
 mod descriptors;
 mod devices;
@@ -15,12 +16,12 @@ mod sync;
 mod utils;
 use core::panic::PanicInfo;
 mod logging;
+mod datastructures;
 
 use logging::writer;
 use utils::asm;
 
-use crate::{devices::vga::Color, writer::set_color};
-
+use crate::{devices::vga::Color, sync::spinlock::Mutex, writer::set_color};
 
 /// This function is called on panic.
 #[panic_handler]
@@ -36,8 +37,6 @@ pub extern "C" fn _start() -> ! {
     info!("Starting kernel");
     #[cfg(test)]
     test_main();
-
-
 
     kernel_main();
 
@@ -55,9 +54,12 @@ fn test_breakpoint() {
 pub fn kernel_main() {
     interrupts::setup::interrupt_setup();
     unsafe { utils::asm::enable_interrupts() }; // this fails if no handler is installed
-    // unsafe { asm::int3() };
+                                                // unsafe { asm::int3() };
     info!("Breakpoint interrupt tested");
 
+    let mut a = None;
+    a = Some(1);
+    let b = a.expect("THis was none") + 1;
 }
 
 #[cfg(test)]
