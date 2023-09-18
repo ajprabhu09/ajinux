@@ -1,6 +1,6 @@
 use crate::utils::asm::{self, iodelay};
 
-pub struct Port(u16);
+pub struct Port(pub u16);
 
 #[allow(dead_code)]
 impl Port {

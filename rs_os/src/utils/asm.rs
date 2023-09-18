@@ -84,10 +84,7 @@ pub unsafe fn int3() {
 }
 #[allow(dead_code)]
 pub unsafe fn sidt() -> DescriptorPointer {
-    let pointer: DescriptorPointer = DescriptorPointer {
-        size: 0,
-        offset: 0,
-    };
+    let pointer: DescriptorPointer = DescriptorPointer { size: 0, offset: 0 };
     asm!("sidt [{}]", in(reg) &pointer, options(readonly, nostack, preserves_flags));
     info!(" Pointer {:#?}", pointer);
     return pointer;

@@ -21,6 +21,7 @@ use utils::asm;
 
 use crate::{devices::vga::Color, writer::set_color};
 
+
 /// This function is called on panic.
 #[panic_handler]
 fn panic(_info: &PanicInfo) -> ! {
@@ -36,15 +37,27 @@ pub extern "C" fn _start() -> ! {
     #[cfg(test)]
     test_main();
 
+
+
     kernel_main();
 
     loop {}
 }
 
-pub fn kernel_main() {
-    interrupts::interrupt_setup();
+#[test_case]
+fn test_breakpoint() {
+    interrupts::setup::interrupt_setup();
     // unsafe { utils::asm::enable_interrupts() }; // this fails if no handler is installed
     unsafe { asm::int3() };
+    info!("Breakpoint interrupt tested");
+}
+
+pub fn kernel_main() {
+    interrupts::setup::interrupt_setup();
+    unsafe { utils::asm::enable_interrupts() }; // this fails if no handler is installed
+    // unsafe { asm::int3() };
+    info!("Breakpoint interrupt tested");
+
 }
 
 #[cfg(test)]

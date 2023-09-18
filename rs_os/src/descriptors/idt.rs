@@ -1,14 +1,12 @@
-
-
+use super::segmentation::{GetReg, CS};
+use crate::utils::asm::lidt;
 use bitfield_struct::bitfield;
 use core::fmt;
 use core::marker::PhantomData;
-use crate::utils::asm::lidt;
-use super::segmentation::{GetReg, CS};
 
 #[repr(C, packed(2))]
 #[derive(Debug)]
-pub struct DescriptorPointer{
+pub struct DescriptorPointer {
     pub size: u16,
     pub offset: u64,
 }
@@ -51,7 +49,7 @@ pub struct InterruptDescriptorTable {
     pub vmm_communication_exception: Entry<HandlerFuncWithErrCode>,
     pub security_exception: Entry<HandlerFuncWithErrCode>,
     reserved_3: Entry<HandlerFunc>,
-    interrupts: [Entry<HandlerFunc>; 256 - 32],
+    pub interrupts: [Entry<HandlerFunc>; 256 - 32],
 }
 
 impl InterruptDescriptorTable {
@@ -86,7 +84,7 @@ impl InterruptDescriptorTable {
         }
     }
     pub fn load(&'static self) {
-        unsafe { 
+        unsafe {
             let ptr = DescriptorPointer {
                 offset: self as *const _ as u64,
                 size: 4095,
@@ -100,7 +98,6 @@ pub enum GateType {
     TrapGate = 0xE,
     InterruptGate = 0xF,
 }
-
 
 impl GateType {
     pub const fn from_bits(val: u16) -> Self {

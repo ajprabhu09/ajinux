@@ -20,6 +20,10 @@ impl<T> Racy<T> {
     pub fn take(&self) -> RacyGuard<T> {
         RacyGuard { mutex: self }
     }
+
+    pub fn take_static(&'static self) -> &'static T {
+        unsafe { &*self.data.get() }
+    }
 }
 
 impl<T> Drop for Racy<T> {
