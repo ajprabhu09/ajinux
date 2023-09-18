@@ -199,6 +199,8 @@ impl ConsoleDisplay for VGADisplay {
                     // YOU DECIDE.
                     // for now moving to end of the previous line
                     self.set_cursor((cursor.0 - 1, (BUFFER_WIDTH - 1) as i32))?;
+                    let cursor = self.get_cursor();
+                    self.buffer.set_at(cursor, Text::colored(b' ', self.curr_fg_color, self.curr_bg_color))
                 } else {
                     self.set_cursor((cursor.0, cursor.1 - 1))?;
                     self.buffer.set_at(

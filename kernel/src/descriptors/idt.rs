@@ -128,22 +128,22 @@ impl core::fmt::Debug for GateType {
 #[bitfield(u16)]
 pub struct IdtSettings {
     #[bits(3)]
-    interrupt_stack_table: u8,
+    pub interrupt_stack_table: u8,
 
     #[bits(5)]
     _reserved: u8,
 
     #[bits(4)]
-    gate_type: GateType,
+    pub gate_type: GateType,
 
     #[bits(1)]
     _reserved2: u8, // always zero
 
     #[bits(2)]
-    privilege_level: u8,
+    pub privilege_level: u8,
 
     #[bits(1)]
-    present: bool,
+    pub present: bool,
 }
 
 #[derive(Clone, Copy)]
@@ -151,7 +151,7 @@ pub struct IdtSettings {
 pub struct Entry<F> {
     pointer_low: u16,
     gdt_selector: u16,
-    options: IdtSettings,
+    pub options: IdtSettings,
     pointer_middle: u16,
     pointer_high: u32,
     reserved: u32,
@@ -199,13 +199,14 @@ impl<F> Entry<F> {
 macro_rules! impl_set_handler_fn {
     ($h:ty) => {
         impl Entry<$h> {
-            pub fn set_handler_fn(&mut self, handler: $h) {
+            pub fn set_handler_fn(&mut self, handler: $h) -> &mut Self {
                 let addr = handler as u64;
                 self.pointer_low = addr as u16;
                 self.pointer_middle = (addr >> 16) as u16;
                 self.pointer_high = (addr >> 32) as u32;
                 self.gdt_selector = CS::get_reg();
                 self.options.set_present(true);
+                self
             }
         }
     };

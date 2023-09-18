@@ -7,20 +7,23 @@
 #![feature(const_mut_refs)]
 #![allow(clippy::empty_loop)]
 #![allow(clippy::needless_return)]
+
 mod addr;
 mod descriptors;
 mod devices;
 mod interrupts;
 mod sync;
 mod utils;
-use core::panic::PanicInfo;
+use core::{fmt::Write, panic::PanicInfo};
+mod datastructures;
 mod logging;
-
-use logging::writer;
+mod io;
 use utils::asm;
 
-use crate::{devices::vga::Color, writer::set_color};
-
+use crate::{
+    devices::{vga::Color, keyboard::ConsoleInput}, io::{writer::{WRITER, set_color}, reader::READER},
+    sync::spinlock::Mutex,
+};
 
 /// This function is called on panic.
 #[panic_handler]
@@ -37,11 +40,13 @@ pub extern "C" fn _start() -> ! {
     #[cfg(test)]
     test_main();
 
-
-
     kernel_main();
 
-    loop {}
+    loop {
+        let mut buf = ['a'; 100];
+        READER.take().input.read_line(&mut buf, 100);
+        println!("{:?}", buf);
+    }
 }
 
 #[test_case]
@@ -55,8 +60,7 @@ fn test_breakpoint() {
 pub fn kernel_main() {
     interrupts::setup::interrupt_setup();
     unsafe { utils::asm::enable_interrupts() }; // this fails if no handler is installed
-    // unsafe { asm::int3() };
-    info!("Breakpoint interrupt tested");
+                                                // unsafe { asm::int3() };
 
 }
 

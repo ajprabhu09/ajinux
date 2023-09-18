@@ -1,6 +1,5 @@
 use core::{borrow::BorrowMut, fmt};
-
-use crate::logging::writer::WRITER;
+use crate::io::writer::WRITER;
 
 #[macro_export]
 macro_rules! print {

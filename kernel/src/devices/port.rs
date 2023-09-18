@@ -2,7 +2,6 @@ use crate::utils::asm::{self, iodelay};
 
 pub struct Port(pub u16);
 
-#[allow(dead_code)]
 impl Port {
     pub fn send_byte(&self, val: u8) {
         unsafe {
