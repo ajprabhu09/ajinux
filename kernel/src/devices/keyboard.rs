@@ -35,7 +35,6 @@ impl ConsoleInput for Keyboard {
 
     fn read_line(&mut self, dest: &mut [char], len: usize) {
         let mut idx = 0;
-        let mut temp = dest.c;
         loop {
             if idx == len {
                 break;
