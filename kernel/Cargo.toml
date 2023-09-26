@@ -10,6 +10,7 @@ bit_field = "0.10.2"
 bitfield-struct = "0.5.4"
 bitflags = "2.4.0"
 bootloader = "0.9.23"
+bootloader_api = "0.11.4"
 volatile = "0.5.1"
 
 [dependencies.lazy_static]
