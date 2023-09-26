@@ -16,12 +16,16 @@ mod sync;
 mod utils;
 use core::{fmt::Write, panic::PanicInfo};
 mod datastructures;
-mod logging;
 mod io;
+mod logging;
 use utils::asm;
-
+mod cc;
 use crate::{
-    devices::{vga::Color, keyboard::ConsoleInput}, io::{writer::{WRITER, set_color}, reader::READER},
+    devices::{keyboard::ConsoleInput, vga::Color},
+    io::{
+        reader::READER,
+        writer::{set_color, WRITER},
+    },
     sync::spinlock::Mutex,
 };
 
@@ -61,7 +65,8 @@ pub fn kernel_main() {
     interrupts::setup::interrupt_setup();
     unsafe { utils::asm::enable_interrupts() }; // this fails if no handler is installed
                                                 // unsafe { asm::int3() };
-
+    let val = unsafe { cc::test_func() };
+    println!("{:?}", val);
 }
 
 #[cfg(test)]

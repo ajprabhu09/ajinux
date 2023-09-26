@@ -3,7 +3,7 @@ use core::slice::EscapeAscii;
 use bitfield_struct::bitfield;
 
 use super::{port::Port, vga::ConsoleDisplay};
-use crate::{datastructures::ringbuffer::RingBuf, error, print, info, println, io::writer::WRITER};
+use crate::{datastructures::ringbuffer::RingBuf, error, info, io::writer::WRITER, print, println};
 #[derive(Debug, Clone, Copy)]
 pub enum Key {
     Char(char),
@@ -27,7 +27,6 @@ pub trait ConsoleInput {
     fn read_line(&mut self, dest: &mut [char], len: usize);
 }
 
-
 impl ConsoleInput for Keyboard {
     fn read_char(&mut self) -> Option<char> {
         self.process_buf()
@@ -40,17 +39,15 @@ impl ConsoleInput for Keyboard {
                 break;
             }
             let c = self.process_buf_wait();
-            
+
             dest[idx] = c;
             if c == '\n' {
                 break;
             }
-            idx+=1;
+            idx += 1;
         }
-
     }
 }
-
 
 pub const TOP_ROW: &'static str = "qwertyuiop[]";
 pub const HOME_ROW: &'static str = "asdfghjkl;'`";
@@ -539,14 +536,14 @@ impl Keyboard {
     }
 
     pub fn process_buf_wait(&mut self) -> char {
-       loop {
-        let val = self.process_buf();
-        if let Some(c) = val {
-            WRITER.take().display.put_byte(c as u8);
-            return c;
+        loop {
+            let val = self.process_buf();
+            if let Some(c) = val {
+                WRITER.take().display.put_byte(c as u8);
+                return c;
+            }
         }
-       }
-    } 
+    }
 
     pub fn read_raw(&self) -> KeyAction {
         map_val_to_key_scan_code_1(self.scan_code())
