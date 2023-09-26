@@ -18,7 +18,7 @@ use core::{fmt::Write, panic::PanicInfo};
 mod datastructures;
 mod io;
 mod logging;
-use bootloader_api::BootInfo;
+use bootloader::BootInfo;
 use utils::asm;
 mod cc;
 use crate::{
@@ -32,7 +32,7 @@ use crate::{
 mod test_kern;
 
 
-bootloader_api::entry_point!(kernel_main);
+bootloader::entry_point!(kernel_main);
 
 /// This function is called on panic.
 #[panic_handler]
@@ -42,7 +42,7 @@ fn panic(_info: &PanicInfo) -> ! {
     loop {}
 }
 
-pub fn kernel_main(bootinfo: &'static mut BootInfo) -> ! {
+pub fn kernel_main(bootinfo: &'static BootInfo) -> ! {
     info!("Starting kernel");
     #[cfg(test)]
     test_main();
@@ -51,7 +51,7 @@ pub fn kernel_main(bootinfo: &'static mut BootInfo) -> ! {
     unsafe { utils::asm::enable_interrupts() }; // this fails if no handler is installed
                                                 // unsafe { asm::int3() };
     let val = unsafe { cc::func() };
-    println!("{:?}", val);
+    println!("{:?}", bootinfo);
 
     loop {
         let mut buf = ['a'; 100];
