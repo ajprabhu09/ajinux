@@ -65,7 +65,7 @@ pub fn kernel_main() {
     interrupts::setup::interrupt_setup();
     unsafe { utils::asm::enable_interrupts() }; // this fails if no handler is installed
                                                 // unsafe { asm::int3() };
-    let val = unsafe { cc::test_func() };
+    let val = unsafe { cc::func() };
     println!("{:?}", val);
 }
 
