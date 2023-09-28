@@ -3,7 +3,7 @@ use core::slice::EscapeAscii;
 use bitfield_struct::bitfield;
 
 use super::{port::Port, vga::ConsoleDisplay};
-use crate::{datastructures::ringbuffer::RingBuf, error, info, io::writer::WRITER, print, println};
+use crate::{datastructures::no_alloc::ringbuffer::RingBuf, error, info, io::writer::WRITER, print, println};
 #[derive(Debug, Clone, Copy)]
 pub enum Key {
     Char(char),

@@ -7,7 +7,7 @@
 #![feature(const_mut_refs)]
 #![allow(clippy::empty_loop)]
 #![allow(clippy::needless_return)]
-
+#![feature(let_chains)]
 mod addr;
 mod descriptors;
 mod devices;
@@ -18,9 +18,14 @@ use core::{fmt::Write, panic::PanicInfo};
 mod datastructures;
 mod io;
 mod logging;
-use bootloader::BootInfo;
+use bootloader::{
+    bootinfo::{MemoryRegion, MemoryRegionType},
+    BootInfo,
+};
 use utils::asm;
+mod allocator;
 mod cc;
+
 use crate::{
     devices::{keyboard::ConsoleInput, vga::Color},
     io::{
@@ -30,7 +35,6 @@ use crate::{
     sync::spinlock::Mutex,
 };
 mod test_kern;
-
 
 bootloader::entry_point!(kernel_main);
 
@@ -51,7 +55,12 @@ pub fn kernel_main(bootinfo: &'static BootInfo) -> ! {
     unsafe { utils::asm::enable_interrupts() }; // this fails if no handler is installed
                                                 // unsafe { asm::int3() };
     let val = unsafe { cc::func() };
-    println!("{:?}", bootinfo);
+    // println!("{:#?}", bootinfo);
+
+    let usable_regions = bootinfo
+        .memory_map
+        .iter()
+        .filter(|region| region.region_type == MemoryRegionType::Usable);
 
     loop {
         let mut buf = ['a'; 100];
@@ -61,4 +70,3 @@ pub fn kernel_main(bootinfo: &'static BootInfo) -> ! {
 
     loop {}
 }
-

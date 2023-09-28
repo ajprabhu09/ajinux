@@ -1,4 +1,4 @@
-use crate::{interrupts, utils::asm, info};
+use crate::{info, interrupts, utils::asm};
 
 #[test_case]
 fn test_breakpoint() {
