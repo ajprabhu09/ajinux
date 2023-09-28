@@ -68,6 +68,9 @@ impl LinkedList {
             }
         }
     }
+    pub fn iter(&self) -> LLIter {
+        LLIter { head: self.head, curr: self.head, started: false }
+    }
 }
 
 pub struct LLIter {
@@ -75,6 +78,8 @@ pub struct LLIter {
     curr: *mut Node,
     started: bool,
 }
+
+
 
 
 impl Iterator for LLIter {

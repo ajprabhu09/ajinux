@@ -25,14 +25,13 @@ use bootloader::{
 use utils::asm;
 mod allocator;
 mod cc;
-
 use crate::{
     devices::{keyboard::ConsoleInput, vga::Color},
     io::{
         reader::READER,
         writer::{set_color, WRITER},
     },
-    sync::spinlock::Mutex,
+    sync::spinlock::Mutex, allocator::page_alloc::PageAlloc,
 };
 mod test_kern;
 
@@ -55,17 +54,18 @@ pub fn kernel_main(bootinfo: &'static BootInfo) -> ! {
     unsafe { utils::asm::enable_interrupts() }; // this fails if no handler is installed
                                                 // unsafe { asm::int3() };
     let val = unsafe { cc::func() };
-    // println!("{:#?}", bootinfo);
+    let mut allocator: PageAlloc<4096> = PageAlloc::default();
 
     let usable_regions = bootinfo
         .memory_map
         .iter()
         .filter(|region| region.region_type == MemoryRegionType::Usable);
 
-    loop {
-        let mut buf = ['a'; 100];
-        READER.take().input.read_line(&mut buf, 100);
-        println!("{:?}", buf);
+
+    for region in usable_regions {
+        println!("Setting up apges in region {:?}", region);
+        // BUG: Adding a region causes a segment error
+        allocator.add_region(region.range.start_addr(), region.range.end_addr());
     }
 
     loop {}
