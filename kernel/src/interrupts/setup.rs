@@ -28,8 +28,23 @@ extern "x86-interrupt" fn timer_interrupt(frame: ExceptionStackFrame) {
 extern "x86-interrupt" fn keyboard_interrupt(frame: ExceptionStackFrame) {
     let scan_code = READER.take().input.read_into_buf();
     // info!("Scanned code: {:?}", scan_code);
+    // println!("jerer");
     PIC.eoi(1);
 }
+
+extern "x86-interrupt" fn segment_not_present_handler(frame: ExceptionStackFrame, err_code: u64) {
+    println!("Segment not present error");
+
+    // PIC.eoi(1);
+}
+extern "x86-interrupt" fn page_fault_handler(frame: ExceptionStackFrame) {
+    println!("Segment not present error");
+
+    // PIC.eoi(1);
+}
+
+
+
 
 pub fn interrupt_setup() {
     PIC.remap(0x20, 0x28);
@@ -46,6 +61,10 @@ pub fn interrupt_setup() {
 
     _IDT.take().breakpoint.set_handler_fn(breakpoint_handler);
     // _IDT.take().double_fault.set_handler_fn(double_fault_handler);
+    _IDT.take().segment_not_present.set_handler_fn(segment_not_present_handler);
+
+    _IDT.take().page_fault.set_handler_fn(page_fault_handler);
+
 
     _IDT.take_static().load();
 }

@@ -66,6 +66,9 @@ impl Text {
             style: Color::pack(bg, fg),
         }
     }
+    pub const fn zero() -> Self {
+        Self { ascii: 0, style: 0 }
+    }
     pub fn from(v: u8) -> Self {
         Self::colored(v, DEFAULT_BG_COLOR, DEFAULT_FG_COLOR)
     }
@@ -122,6 +125,7 @@ pub trait ConsoleDisplay {
     fn set_cursor(&mut self, loc: (i32, i32)) -> Result<(), ConsoleErrType>;
     fn get_cursor(&mut self) -> (i32, i32);
     fn hide_cursor(&mut self);
+    fn clear(&mut self);
 }
 #[allow(dead_code)]
 impl VGADisplay {
@@ -306,4 +310,10 @@ impl ConsoleDisplay for VGADisplay {
         self.set_cursor(((BUFFER_HEIGHT + 1) as i32, (BUFFER_WIDTH + 1) as i32))
             .unwrap();
     }
+
+    fn clear(&mut self) {
+        // This might not work sometimes
+        self.buffer.buffer = [[Text::zero(); BUFFER_WIDTH]; BUFFER_HEIGHT];
+        self.set_cursor((0,0)).unwrap();
+   }
 }
