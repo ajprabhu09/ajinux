@@ -3,7 +3,7 @@ use core::slice::EscapeAscii;
 use bitfield_struct::bitfield;
 
 use super::{port::Port, vga::ConsoleDisplay};
-use crate::{datastructures::ringbuffer::RingBuf, error, info, io::writer::WRITER, print, println};
+use crate::{datastructures::no_alloc::ringbuffer::RingBuf, error, info, io::writer::WRITER, print, println};
 #[derive(Debug, Clone, Copy)]
 pub enum Key {
     Char(char),
@@ -476,6 +476,9 @@ impl Keyboard {
                         Some(c)
                     } else if self.caps_lock && !self.shifter || !self.caps_lock && self.shifter {
                         match c {
+                            'a'..='z' => {
+                                return Some(c.to_ascii_uppercase());
+                            }
                             '0'..='9' => {
                                 if c == '0' {
                                     return Some(')');
