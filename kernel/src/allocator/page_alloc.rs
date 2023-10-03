@@ -2,7 +2,7 @@ use core::{marker::PhantomData, cell::RefCell, ptr::null};
 
 use bootloader::{bootinfo::{MemoryRegion, self}, BootInfo};
 
-use crate::{datastructures::no_alloc::linked_list::{LinkedList, Node}, println};
+use crate::{datastructures::no_alloc::linked_list::{LinkedList, Node}, kprintln};
 
 
 
@@ -19,7 +19,7 @@ impl<const PAGE_SIZE: u64> PageAlloc<PAGE_SIZE> {
 
     pub fn print_reg(&self) {
         for i in self.free_list.borrow().iter() {
-            println!("{:?}", unsafe{&*i});
+            kprintln!("{:?}", unsafe{&*i});
         }
     }
 

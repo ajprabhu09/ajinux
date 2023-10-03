@@ -2,17 +2,17 @@ use crate::io::writer::WRITER;
 use core::{borrow::BorrowMut, fmt};
 
 #[macro_export]
-macro_rules! print {
+macro_rules! kprint {
     ($($arg:tt)*) => ($crate::logging::vga_print::_print(format_args!($($arg)*)));
 }
 
 #[macro_export]
-macro_rules! println {
+macro_rules! kprintln {
     () => {
-        $crate::print!("\n")
+        $crate::kprint!("\n")
     };
     ($($arg:tt)*) => {{
-        $crate::print!("{}\n", format_args!($($arg)*));
+        $crate::kprint!("{}\n", format_args!($($arg)*));
     }};
 }
 

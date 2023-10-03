@@ -6,7 +6,7 @@ use crate::io::reader::READER;
 use lazy_static::lazy_static;
 
 use crate::info;
-use crate::{descriptors::idt::*, println, sync::shitlock::Racy};
+use crate::{descriptors::idt::*, kprintln, sync::shitlock::Racy};
 
 lazy_static! {
     static ref _IDT: Racy<InterruptDescriptorTable> = Racy::from(InterruptDescriptorTable::new());
@@ -33,12 +33,12 @@ extern "x86-interrupt" fn keyboard_interrupt(frame: ExceptionStackFrame) {
 }
 
 extern "x86-interrupt" fn segment_not_present_handler(frame: ExceptionStackFrame, err_code: u64) {
-    println!("Segment not present error");
+    kprintln!("Segment not present error");
 
     // PIC.eoi(1);
 }
 extern "x86-interrupt" fn page_fault_handler(frame: ExceptionStackFrame) {
-    println!("Segment not present error");
+    kprintln!("Segment not present error");
 
     // PIC.eoi(1);
 }

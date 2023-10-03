@@ -10,9 +10,9 @@ fn test_breakpoint() {
 
 #[cfg(test)]
 pub fn test_runner(tests: &[&dyn Fn()]) {
-    use crate::println;
+    use crate::kprintln;
 
-    println!("Running {} tests", tests.len());
+    kprintln!("Running {} tests", tests.len());
     for test in tests {
         test();
     }

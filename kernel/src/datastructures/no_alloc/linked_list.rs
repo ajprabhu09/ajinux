@@ -213,7 +213,6 @@ pub fn test_linked_list() {
     }
 
     info!("{:?}", data);
-
     // assert_eq!(node1, ll.tail());
 
 }

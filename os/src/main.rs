@@ -19,7 +19,7 @@ bootloader::entry_point!(kernel_main);
 #[panic_handler]
 fn panic(_info: &PanicInfo) -> ! {
     set_color(Color::pack(Color::Black, Color::Red));
-    print!("{}", _info);
+    kprint!("{}", _info);
     loop {}
 }
 
@@ -40,7 +40,7 @@ pub fn kernel_main(bootinfo: &'static BootInfo) -> ! {
 
     // println!("{:#?}", bootinfo.physical_memory_offset as *mut ());
     for region in usable_regions {
-        println!("Setting up apges in region {:?}", region);
+        kprintln!("Setting up apges in region {:?}", region);
         unsafe { ALLOC.add_region(
                 region.range.start_addr() + bootinfo.physical_memory_offset,
                  region.range.end_addr() + bootinfo.physical_memory_offset) };

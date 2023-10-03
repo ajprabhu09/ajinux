@@ -4,7 +4,7 @@ use core::arch::asm;
 
 use crate::{
     descriptors::{gdt::GdtPointer, idt::DescriptorPointer},
-    info, println,
+    info, kprintln,
 };
 
 pub unsafe fn outb(port: u16, val: u8) {
