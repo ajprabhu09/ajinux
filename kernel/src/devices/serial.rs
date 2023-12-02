@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+#![allow(unused)]
 use super::{port::Port, vga::{ConsoleDisplay, ConsoleErrType, PackedColor}};
 
 

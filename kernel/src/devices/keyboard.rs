@@ -1,5 +1,7 @@
 
 
+#![allow(dead_code)]
+#![allow(unused)]
 use bitfield_struct::bitfield;
 
 use super::{port::Port, vga::ConsoleDisplay};

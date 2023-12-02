@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+#![allow(unused)]
 use crate::devices::port::Port;
 
 const PIC1_CMD: u16 = 0x20;

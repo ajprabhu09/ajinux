@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+#![allow(unused)]
 pub struct CS;
 pub struct DS;
 pub struct SS;

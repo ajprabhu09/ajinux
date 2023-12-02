@@ -1,6 +1,4 @@
-use core::{
-    ptr::{null_mut, NonNull},
-};
+use core::ptr::{null_mut, NonNull};
 
 #[repr(C)]
 #[derive(Debug)]
@@ -43,9 +41,7 @@ impl<H> LinkedList<H> {
         }
     }
     pub fn push_front(&mut self, val: *mut Node<H>) {
-        unsafe {
-            self.push_back(val);
-        }
+        self.push_back(val);
         self.head = val as *mut _;
     }
 

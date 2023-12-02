@@ -1,5 +1,5 @@
-
-
+#![allow(dead_code)]
+#![allow(unused)]
 use crate::{info, kprintln};
 
 use super::port::Port;

@@ -1,3 +1,4 @@
+#![allow(unused)]
 use crate::{io::writer::{SERIAL_WRITER}, devices::serial::{COM1, SerialCom}};
 use core::{fmt};
 

@@ -1,10 +1,8 @@
-use core::{cell::RefCell};
 
 
-use bitflags::Flags;
-use bootloader::{
-    BootInfo,
-};
+use core::cell::RefCell;
+
+use bootloader::BootInfo;
 
 use crate::{
     datastructures::no_alloc::linked_list::{LinkedList, Node},
