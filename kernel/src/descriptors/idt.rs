@@ -1,4 +1,4 @@
-use super::segmentation::{GetReg, CS};
+use super::reg::{GetReg, CS};
 use crate::utils::asm::lidt;
 use bitfield_struct::bitfield;
 use core::fmt;

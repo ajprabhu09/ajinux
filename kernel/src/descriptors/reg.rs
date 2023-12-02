@@ -5,12 +5,18 @@ pub struct ES;
 pub struct FS;
 pub struct GS;
 
+pub struct CR0;
+
 use core::arch::asm;
 
 use crate::info;
 
 pub trait GetReg {
     fn get_reg() -> u16;
+}
+
+pub trait SetReg<T> {
+    fn set_reg(val: T);
 }
 
 macro_rules! get_reg_impl {
@@ -31,6 +37,20 @@ macro_rules! get_reg_impl {
         }
     }
 }
-
+macro_rules! set_reg64_impl {
+    ($reg:expr, $regtyp:ty) => {
+        impl SetReg<u64> for $regtyp {
+            fn set_reg(val: u64) {
+                unsafe {
+                    asm!(
+                        concat!("mov ", $reg,", {}"),
+                        in(reg) val);
+                }
+            }
+        }
+    }
+}
 get_reg_impl!("cs", CS);
 get_reg_impl!("ds", DS);
+
+set_reg64_impl!("cr0", CR0);

@@ -5,7 +5,7 @@ fn test_breakpoint() {
     interrupts::setup::interrupt_setup();
     // unsafe { utils::asm::enable_interrupts() }; // this fails if no handler is installed
     unsafe { asm::int3() };
-    info!("Breakpoint interrupt tested");
+    serial_info!("Breakpoint interrupt tested");
 }
 
 #[cfg(test)]

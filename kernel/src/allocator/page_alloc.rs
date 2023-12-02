@@ -1,25 +1,35 @@
-use core::{marker::PhantomData, cell::RefCell, ptr::null};
+use core::{cell::RefCell, marker::PhantomData, ptr::null};
 
-use bootloader::{bootinfo::{MemoryRegion, self}, BootInfo};
+use bitfield_struct::bitfield;
+use bitflags::Flags;
+use bootloader::{
+    bootinfo::{self, MemoryRegion},
+    BootInfo,
+};
 
-use crate::{datastructures::no_alloc::linked_list::{LinkedList, Node}, kprintln};
-
-
+use crate::{
+    datastructures::no_alloc::linked_list::{LinkedList, Node},
+    debug, kprintln,
+};
 
 pub struct PageAlloc<const PAGE_SIZE: u64> {
-    pub free_list: RefCell<LinkedList<[u8;0]>>,
+    pub free_list: RefCell<LinkedList<[u8; 0]>>,
     pub bootinfo: Option<&'static BootInfo>,
+    pub total_size: u64,
 }
-
 
 impl<const PAGE_SIZE: u64> PageAlloc<PAGE_SIZE> {
     pub const fn default() -> Self {
-        Self { free_list: RefCell::new(LinkedList::default()), bootinfo: None}
+        Self {
+            free_list: RefCell::new(LinkedList::default()),
+            bootinfo: None,
+            total_size: 0
+        }
     }
 
     pub fn print_reg(&self) {
         for i in self.free_list.borrow().iter() {
-            kprintln!("{:?}", unsafe{&*i});
+            kprintln!("{:?}", unsafe { &*i });
         }
     }
 
@@ -29,12 +39,18 @@ impl<const PAGE_SIZE: u64> PageAlloc<PAGE_SIZE> {
 
     pub fn add_region(&mut self, start: u64, end: u64) {
         let mut i = start;
-        
+
         while i < end {
-            self.free_list.borrow_mut().push_back(Node::from(i as *mut u8));
-            i += PAGE_SIZE
+            self.free_list
+                .borrow_mut()
+                .push_back(Node::from(i as *mut u8));
+            i += PAGE_SIZE;
+            self.total_size += PAGE_SIZE;
+        }
+        debug!("total size is {:?} MB", self.total_size / 1_000_000);
+
+        if i - end != 0 {
+            debug!("left some memory on the table {:#02x}", i - end);
         }
     }
 }
-
-

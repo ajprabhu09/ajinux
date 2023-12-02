@@ -10,21 +10,27 @@
 #![feature(let_chains)]
 
 // extern crate alloc;
-pub mod test_kern;
 pub mod addr;
 pub mod descriptors;
 pub mod devices;
 pub mod interrupts;
 pub mod sync;
+pub mod test_kern;
 pub mod utils;
-pub use core::{fmt::Write, panic::PanicInfo, alloc::GlobalAlloc, ptr::{null, null_mut}};
+pub use core::{
+    alloc::GlobalAlloc,
+    fmt::Write,
+    panic::PanicInfo,
+    ptr::{null, null_mut},
+};
 
 use crate::{devices::vga::Color, io::writer::set_color};
+pub mod allocator;
+pub mod cc;
 pub mod datastructures;
 pub mod io;
 pub mod logging;
-pub mod allocator;
-pub mod cc;
+pub mod paging;
 
 // This function is called on panic.
 // #[panic_handler]
