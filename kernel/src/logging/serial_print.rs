@@ -1,5 +1,5 @@
-use crate::{io::writer::{WRITER, SERIAL_WRITER}, devices::serial::{COM1, SerialCom}};
-use core::{borrow::BorrowMut, fmt};
+use crate::{io::writer::{SERIAL_WRITER}, devices::serial::{COM1, SerialCom}};
+use core::{fmt};
 
 
 const SERIAL: SerialCom = SerialCom::new(COM1);

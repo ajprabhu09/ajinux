@@ -26,13 +26,7 @@ use kernel::{
 
 bootloader::entry_point!(kernel_main);
 
-/// This function is called on panic.
-#[panic_handler]
-fn panic(_info: &PanicInfo) -> ! {
-    set_color(Color::pack(Color::Black, Color::Red));
-    kprint!("{}", _info);
-    loop {}
-}
+
 
 static mut ALLOC: PageAlloc<4096> = PageAlloc::default();
 

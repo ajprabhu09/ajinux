@@ -1,11 +1,10 @@
-use core::slice::EscapeAscii;
+
 
 use bitfield_struct::bitfield;
 
 use super::{port::Port, vga::ConsoleDisplay};
 use crate::{
-    datastructures::no_alloc::ringbuffer::RingBuf, error, info, io::writer::WRITER, kprint,
-    kprintln,
+    datastructures::no_alloc::ringbuffer::RingBuf, io::writer::WRITER,
 };
 #[derive(Debug, Clone, Copy)]
 pub enum Key {
@@ -524,8 +523,8 @@ impl Keyboard {
         }
     }
     pub fn read_key(&mut self) -> KeyAction {
-        use Key::*;
-        use KeyAction::*;
+        
+        
         let scan = map_val_to_key_scan_code_1(self.scan_code());
         self.set_modifier(scan);
         scan

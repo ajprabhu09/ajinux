@@ -1,6 +1,5 @@
 use core::{
-    marker::PhantomData,
-    ptr::{null, null_mut, NonNull},
+    ptr::{null_mut, NonNull},
 };
 
 #[repr(C)]
@@ -81,8 +80,8 @@ impl<H> LinkedList<H> {
             return null_mut();
         }
 
-        let mut head_next = unsafe { &*(head) }.next;
-        let mut head_prev = unsafe { &*(head) }.prev;
+        let head_next = unsafe { &*(head) }.next;
+        let head_prev = unsafe { &*(head) }.prev;
 
         if head_prev == head {
             // only one elem

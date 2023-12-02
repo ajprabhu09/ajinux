@@ -1,13 +1,13 @@
-use core::f32::consts::PI;
 
-use crate::devices::keyboard::Keyboard;
+
+
 use crate::devices::pic8259::*;
-use crate::devices::pit::PIT;
+
 use crate::interrupts::keyboard::keyboard_interrupt;
 use crate::interrupts::timer::timer_interrupt;
-use crate::io::reader::READER;
+
 use crate::{descriptors::idt::*, kprintln, sync::shitlock::Racy};
-use crate::{error, info};
+use crate::{error};
 use lazy_static::lazy_static;
 
 lazy_static! {
@@ -16,18 +16,18 @@ lazy_static! {
 
 pub const PIC: Pic8259 = Pic8259::new();
 
-extern "x86-interrupt" fn double_fault_handler(frame: ExceptionStackFrame, err: u64) -> ! {
+extern "x86-interrupt" fn double_fault_handler(_frame: ExceptionStackFrame, _err: u64) -> ! {
     error!("Double fault");
     loop {}
 }
 
-extern "x86-interrupt" fn breakpoint_handler(frame: ExceptionStackFrame) {}
+extern "x86-interrupt" fn breakpoint_handler(_frame: ExceptionStackFrame) {}
 
-extern "x86-interrupt" fn segment_not_present_handler(frame: ExceptionStackFrame, err_code: u64) {
+extern "x86-interrupt" fn segment_not_present_handler(_frame: ExceptionStackFrame, _err_code: u64) {
     kprintln!("Segment not present error");
     // PIC.eoi(1);
 }
-extern "x86-interrupt" fn page_fault_handler(frame: ExceptionStackFrame) {
+extern "x86-interrupt" fn page_fault_handler(_frame: ExceptionStackFrame) {
     kprintln!("Segment not present error");
     // PIC.eoi(1);
 }

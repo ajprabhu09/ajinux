@@ -2,7 +2,7 @@ use core::fmt::Debug;
 
 use bitfield_struct::bitfield;
 
-use crate::{info, kprintln, utils::asm};
+use crate::{kprintln, utils::asm};
 
 #[bitfield(u64)]
 pub struct GdtEntry {
@@ -85,7 +85,7 @@ pub fn print_gdt() {
         let gdt = &*GlobalDescriptorTable::read();
         let mut count = 5;
         for (i, entry) in gdt.descriptors.iter().enumerate() {
-            if (entry.executable() == true) {
+            if entry.executable() == true {
                 kprintln!("{:?}, {:#?}", i, entry);
                 count -= 1;
                 if count == 0 {

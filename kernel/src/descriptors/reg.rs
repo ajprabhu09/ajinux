@@ -9,7 +9,7 @@ pub struct CR0;
 
 use core::arch::asm;
 
-use crate::info;
+
 
 pub trait GetReg {
     fn get_reg() -> u16;

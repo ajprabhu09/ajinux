@@ -101,11 +101,11 @@ pub enum GateType {
 
 impl GateType {
     pub const fn from_bits(val: u16) -> Self {
-        let v1 = (0xE << 8);
-        let v2 = (0xF << 8);
+        let _v1 = 0xE << 8;
+        let _v2 = 0xF << 8;
         match val {
-            v1 => Self::TrapGate,
-            v2 => Self::InterruptGate,
+            _v1 => Self::TrapGate,
+            _v2 => Self::InterruptGate,
             _ => panic!("invalid gate type"),
         }
     }

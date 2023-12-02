@@ -1,9 +1,8 @@
-use core::{cell::RefCell, marker::PhantomData, ptr::null};
+use core::{cell::RefCell};
 
-use bitfield_struct::bitfield;
+
 use bitflags::Flags;
 use bootloader::{
-    bootinfo::{self, MemoryRegion},
     BootInfo,
 };
 

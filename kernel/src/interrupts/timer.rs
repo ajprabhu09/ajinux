@@ -1,4 +1,4 @@
-use core::sync::atomic::{AtomicI64, AtomicIsize};
+use core::sync::atomic::{AtomicIsize};
 
 use crate::descriptors::idt::ExceptionStackFrame;
 use crate::devices::pit::PIT;
@@ -23,7 +23,7 @@ impl TimerEvents {
 
 pub static mut TIMER_EVENTS: TimerEvents = TimerEvents::default();
 
-pub extern "x86-interrupt" fn timer_interrupt(frame: ExceptionStackFrame) {
+pub extern "x86-interrupt" fn timer_interrupt(_frame: ExceptionStackFrame) {
     // let ptr = frame.instruction_pointer as *const u64;
     unsafe { TIMER_EVENTS.new() };
     PIC.eoi(0);

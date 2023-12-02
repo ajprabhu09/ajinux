@@ -1,6 +1,6 @@
-use core::sync::atomic::{AtomicIsize, AtomicUsize};
 
-use crate::{datastructures::no_alloc::ringbuffer::RingBuf, info, kprintln};
+
+use crate::{info, kprintln};
 
 use super::port::Port;
 

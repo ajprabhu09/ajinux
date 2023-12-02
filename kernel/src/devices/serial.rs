@@ -70,15 +70,15 @@ impl ConsoleDisplay for SerialCom {
        Ok(())
     }
 
-    fn draw_char(&mut self, loc: (i32, i32), ch: u8, color: PackedColor) {
+    fn draw_char(&mut self, _loc: (i32, i32), _ch: u8, _color: PackedColor) {
         panic!("setting color is not supported in serial")
     }
 
-    fn get_char(&mut self, loc: (i32, i32)) -> Result<u8, ConsoleErrType> {
+    fn get_char(&mut self, _loc: (i32, i32)) -> Result<u8, ConsoleErrType> {
         panic!("getting chars at location is not supported in serial")
     }
 
-    fn set_term_color(&mut self, color: PackedColor) {
+    fn set_term_color(&mut self, _color: PackedColor) {
         panic!("setting term color not supported in serial")
         
     }
@@ -87,7 +87,7 @@ impl ConsoleDisplay for SerialCom {
         panic!("getting term color is not supported in serial")
     }
 
-    fn set_cursor(&mut self, loc: (i32, i32)) -> Result<(), ConsoleErrType> {
+    fn set_cursor(&mut self, _loc: (i32, i32)) -> Result<(), ConsoleErrType> {
         panic!("setting cursor is not supoorted in serial")
     }
 
