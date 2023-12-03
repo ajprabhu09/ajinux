@@ -1,7 +1,9 @@
 #![allow(unused)]
-use crate::{io::writer::{SERIAL_WRITER}, devices::serial::{COM1, SerialCom}};
-use core::{fmt};
-
+use crate::{
+    devices::serial::{SerialCom, COM1},
+    io::writer::SERIAL_WRITER,
+};
+use core::fmt;
 
 const SERIAL: SerialCom = SerialCom::new(COM1);
 

@@ -1,4 +1,4 @@
-use core::sync::atomic::{AtomicIsize};
+use core::sync::atomic::AtomicIsize;
 
 use crate::descriptors::idt::ExceptionStackFrame;
 use crate::devices::pit::PIT;

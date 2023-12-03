@@ -43,70 +43,63 @@ pub fn panic(_info: &PanicInfo) -> ! {
 mod test {
     pub fn test_runner(tests: &[&dyn Fn()]) {
         use crate::kprintln;
-        kprintln!("Running {} tests", tests.len());
+        serial_info!("Running {} tests", tests.len());
         for test in tests {
             test();
         }
     }
 
+    use bootloader::{bootinfo::MemoryRegionType, BootInfo};
+    // extern crate alloc;
+    use crate::{
+        allocator::page_alloc::PageAlloc,
+        devices::{
+            pit::PIT,
+            vga::{Color, ConsoleDisplay},
+        },
+        interrupts::timer::PIT_,
+        io::{
+            reader::READER,
+            writer::{set_color, WRITER},
+        },
+        *,
+    };
 
+    use crate::{interrupts, kprint, kprintln, ksprint, utils};
 
+    bootloader::entry_point!(kernel_main);
 
-use bootloader::{bootinfo::MemoryRegionType, BootInfo};
-// extern crate alloc;
-use kernel::{
-    allocator::page_alloc::PageAlloc,
-    devices::{
-        pit::PIT,
-        vga::{Color, ConsoleDisplay},
-    },
-    io::{
-        reader::READER,
-        writer::{set_color, WRITER},
-    },
-    *, interrupts::timer::PIT_,
-};
+    static mut ALLOC: PageAlloc<4096> = PageAlloc::default();
 
-use crate::{kprint, utils, interrupts, kprintln, ksprint};
+    pub fn kernel_main(bootinfo: &'static BootInfo) -> ! {
+        unsafe { utils::asm::disable_interrupts() }; // this fails if no handler is installed
 
-bootloader::entry_point!(kernel_main);
+        unsafe { PIT_.setup(10) };
 
+        test_main();
 
+        interrupts::setup::interrupt_setup();
+        unsafe { utils::asm::enable_interrupts() }; // this fails if no handler is installed
 
-static mut ALLOC: PageAlloc<4096> = PageAlloc::default();
+        let usable_regions = bootinfo
+            .memory_map
+            .iter()
+            .filter(|region| region.region_type == MemoryRegionType::Usable);
 
-pub fn kernel_main(bootinfo: &'static BootInfo) -> ! {
-    kprint!("\n");
-    unsafe { utils::asm::disable_interrupts() }; // this fails if no handler is installed
+        // println!("{:#?}", bootinfo.physical_memory_offset as *mut ());
+        for region in usable_regions {
+            ksprintln!("Setting up apges in region {:?}", region);
+            unsafe {
+                ALLOC.add_region(
+                    region.range.start_addr() + bootinfo.physical_memory_offset,
+                    region.range.end_addr() + bootinfo.physical_memory_offset,
+                )
+            };
+        }
 
-    unsafe { PIT_.setup(10) };
-
-    interrupts::setup::interrupt_setup();
-    unsafe { utils::asm::enable_interrupts() }; // this fails if no handler is installed
-
-    let usable_regions = bootinfo
-        .memory_map
-        .iter()
-        .filter(|region| region.region_type == MemoryRegionType::Usable);
-
-    // println!("{:#?}", bootinfo.physical_memory_offset as *mut ());
-    for region in usable_regions {
-        kprintln!("Setting up apges in region {:?}", region);
-        unsafe {
-            ALLOC.add_region(
-                region.range.start_addr() + bootinfo.physical_memory_offset,
-                region.range.end_addr() + bootinfo.physical_memory_offset,
-            )
-        };
+        // WRITER.take().display.clear();
+        loop {
+            READER.take().input.process_buf_wait();
+        }
     }
-
-    // WRITER.take().display.clear();
-    ksprint!("hello");
-    loop {
-        READER.take().input.process_buf_wait();
-    }
-}
-
-
-
 }

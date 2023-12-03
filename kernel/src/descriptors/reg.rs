@@ -11,8 +11,6 @@ pub struct CR0;
 
 use core::arch::asm;
 
-
-
 pub trait GetReg {
     fn get_reg() -> u16;
 }
@@ -35,7 +33,8 @@ macro_rules! get_reg_impl {
 
         #[test_case]
         pub fn test_cs_get() {
-            info!(concat!($reg,": {:?}"), <$regtyp>::get_reg());
+            use crate::{serial_info};
+            serial_info!(concat!($reg,": {:?}"), <$regtyp>::get_reg());
         }
     }
 }

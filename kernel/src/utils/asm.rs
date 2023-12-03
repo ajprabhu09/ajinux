@@ -4,7 +4,7 @@ use core::arch::asm;
 
 use crate::{
     descriptors::{gdt::GdtPointer, idt::DescriptorPointer},
-    info,
+    info, serial_info,
 };
 
 pub unsafe fn outb(port: u16, val: u8) {
@@ -75,7 +75,7 @@ pub unsafe fn sgdt() -> GdtPointer {
         offset: 0 as *const _,
     };
     asm!("sgdt [{}]", in(reg) &pointer, options(readonly, nostack, preserves_flags));
-    info!(" Pointer {:#?}", pointer);
+    serial_info!(" Pointer {:#?}", pointer);
     return pointer;
 }
 

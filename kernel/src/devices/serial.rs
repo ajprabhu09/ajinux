@@ -1,20 +1,22 @@
 #![allow(dead_code)]
 #![allow(unused)]
-use super::{port::Port, vga::{ConsoleDisplay, ConsoleErrType, PackedColor}};
-
+use super::{
+    port::Port,
+    vga::{ConsoleDisplay, ConsoleErrType, PackedColor},
+};
 
 pub struct SerialCom {
     port: Port,
 }
 
-pub const COM1:u16 =	0x3F8;
-pub const COM2:u16 =	0x2F8;
-pub const COM3:u16 =	0x3E8;
-pub const COM4:u16 =	0x2E8;
-pub const COM5:u16 =	0x5F8;
-pub const COM6:u16 =	0x4F8;
-pub const COM7:u16 =	0x5E8;
-pub const COM8:u16 =	0x4E8;
+pub const COM1: u16 = 0x3F8;
+pub const COM2: u16 = 0x2F8;
+pub const COM3: u16 = 0x3E8;
+pub const COM4: u16 = 0x2E8;
+pub const COM5: u16 = 0x5F8;
+pub const COM6: u16 = 0x4F8;
+pub const COM7: u16 = 0x5E8;
+pub const COM8: u16 = 0x4E8;
 
 impl SerialCom {
     pub const fn new(port: u16) -> Self {
@@ -22,16 +24,16 @@ impl SerialCom {
     }
     pub fn connect(self) -> Result<Self, &'static str> {
         let port = self.port.0;
-        Port(port + 1).send_byte(0x00);    // Disable all interrupts
-        Port(port + 3).send_byte(0x80);    // Enable DLAB (set baud rate divisor)
-        Port(port + 0).send_byte(0x03);    // Set divisor to 3 (lo byte) 38400 baud
-        Port(port + 1).send_byte(0x00);    //                  (hi byte)
-        Port(port + 3).send_byte(0x03);    // 8 bits, no parity, one stop bit
-        Port(port + 2).send_byte(0xC7);    // Enable FIFO, clear them, with 14-byte threshold
-        Port(port + 4).send_byte(0x0B);    // IRQs enabled, RTS/DSR set
-        Port(port + 4).send_byte(0x1E);    // Set in loopback mode, test the serial chip
-        Port(port + 0).send_byte(0xAE);    // Test serial chip (send byte 0xAE and check if serial returns same byte)
-        
+        Port(port + 1).send_byte(0x00); // Disable all interrupts
+        Port(port + 3).send_byte(0x80); // Enable DLAB (set baud rate divisor)
+        Port(port + 0).send_byte(0x03); // Set divisor to 3 (lo byte) 38400 baud
+        Port(port + 1).send_byte(0x00); //                  (hi byte)
+        Port(port + 3).send_byte(0x03); // 8 bits, no parity, one stop bit
+        Port(port + 2).send_byte(0xC7); // Enable FIFO, clear them, with 14-byte threshold
+        Port(port + 4).send_byte(0x0B); // IRQs enabled, RTS/DSR set
+        Port(port + 4).send_byte(0x1E); // Set in loopback mode, test the serial chip
+        Port(port + 0).send_byte(0xAE); // Test serial chip (send byte 0xAE and check if serial returns same byte)
+
         if self.port.read_byte() != 0xAE {
             return Err("unable to setup serial port");
         }
@@ -56,7 +58,6 @@ impl SerialCom {
         while !self.is_tx_empty() {}
         return self.port.send_byte(byt);
     }
-
 }
 
 impl ConsoleDisplay for SerialCom {
@@ -66,10 +67,10 @@ impl ConsoleDisplay for SerialCom {
     }
 
     fn put_bytes(&mut self, ch: &[u8]) -> Result<(), ConsoleErrType> {
-       for c in ch {
+        for c in ch {
             self.put_byte(*c)?;
-       }
-       Ok(())
+        }
+        Ok(())
     }
 
     fn draw_char(&mut self, _loc: (i32, i32), _ch: u8, _color: PackedColor) {
@@ -82,7 +83,6 @@ impl ConsoleDisplay for SerialCom {
 
     fn set_term_color(&mut self, _color: PackedColor) {
         panic!("setting term color not supported in serial")
-        
     }
 
     fn get_term_color(&mut self) -> Result<PackedColor, ConsoleErrType> {

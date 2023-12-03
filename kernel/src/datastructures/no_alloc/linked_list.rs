@@ -143,7 +143,7 @@ impl<H> Iterator for LLIter<H> {
                 (&*curr).next
             };
             self.curr = next;
-            return Some(curr);  
+            return Some(curr);
             
         }
         return None;
@@ -173,7 +173,7 @@ pub fn test_node_size() {
 #[test_case]
 pub fn test_linked_list() {
     use crate::info;
-    info!("Testing linked list");
+    serial_info!("Testing linked list");
     type H = [u8; 0];
     type Np = *mut Node<H>;
 
@@ -199,9 +199,9 @@ pub fn test_linked_list() {
     assert_eq!(node, ll.head);
 
     for l in ll {
-        info!("{:?} {:?}", l, unsafe { &*l });
+        serial_info!("{:?} {:?}", l, unsafe { &*l });
     }
 
-    info!("{:?}", data);
+    serial_info!("{:?}", data);
     // assert_eq!(node1, ll.tail());
 }

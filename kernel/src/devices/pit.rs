@@ -1,6 +1,6 @@
 #![allow(dead_code)]
 #![allow(unused)]
-use crate::{info, kprintln};
+use crate::{info, kprintln, ksprintln, serial_info};
 
 use super::port::Port;
 
@@ -34,11 +34,11 @@ impl PIT {
 
     pub fn setup(&self, interval_ms: u32) {
         let count = (TIMER_RATE * 2 * interval_ms) / 1000;
-        kprintln!("Setting count to {:?}", count);
+        serial_info!("Setting count to {:?}", count);
         let lsb = (count) as u8;
-        info!("lsb :{:?}", lsb);
+        serial_info!("lsb :{:?}", lsb);
         let msb = (count >> 8) as u8;
-        info!("msb :{:?}", msb);
+        serial_info!("msb :{:?}", msb);
 
         self.cmd.send_byte(TIMER_SQUARE_WAVE);
         self.ch0.send_byte(lsb);

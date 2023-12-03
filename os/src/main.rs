@@ -1,8 +1,8 @@
 #![no_std]
 #![no_main]
-#![feature(custom_test_frameworks)]
-#![test_runner(crate::test_kern::test_runner)]
-#![reexport_test_harness_main = "test_main"]
+// #![feature(custom_test_frameworks)]
+// #![test_runner(crate::test_kern::test_runner)]
+// #![reexport_test_harness_main = "test_main"]
 #![feature(abi_x86_interrupt)]
 #![feature(const_mut_refs)]
 #![allow(clippy::empty_loop)]
@@ -11,22 +11,9 @@
 
 use bootloader::{bootinfo::MemoryRegionType, BootInfo};
 // extern crate alloc;
-use kernel::{
-    allocator::page_alloc::PageAlloc,
-    devices::{
-        pit::PIT,
-        vga::{Color, ConsoleDisplay},
-    },
-    io::{
-        reader::READER,
-        writer::{set_color, WRITER},
-    },
-    *, interrupts::timer::PIT_,
-};
+use kernel::{allocator::page_alloc::PageAlloc, interrupts::timer::PIT_, io::reader::READER, *};
 
 bootloader::entry_point!(kernel_main);
-
-
 
 static mut ALLOC: PageAlloc<4096> = PageAlloc::default();
 
@@ -46,7 +33,7 @@ pub fn kernel_main(bootinfo: &'static BootInfo) -> ! {
 
     // println!("{:#?}", bootinfo.physical_memory_offset as *mut ());
     for region in usable_regions {
-        kprintln!("Setting up apges in region {:?}", region);
+        serial_info!("Setting up apges in region {:?}", region);
         unsafe {
             ALLOC.add_region(
                 region.range.start_addr() + bootinfo.physical_memory_offset,
@@ -56,7 +43,6 @@ pub fn kernel_main(bootinfo: &'static BootInfo) -> ! {
     }
 
     // WRITER.take().display.clear();
-    ksprint!("hello");
     loop {
         READER.take().input.process_buf_wait();
     }

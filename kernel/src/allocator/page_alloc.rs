@@ -1,12 +1,10 @@
-
-
 use core::cell::RefCell;
 
 use bootloader::BootInfo;
 
 use crate::{
     datastructures::no_alloc::linked_list::{LinkedList, Node},
-    debug, kprintln,
+    debug, kprintln, ksprintln, serial_info, serial_debug,
 };
 
 pub struct PageAlloc<const PAGE_SIZE: u64> {
@@ -20,13 +18,13 @@ impl<const PAGE_SIZE: u64> PageAlloc<PAGE_SIZE> {
         Self {
             free_list: RefCell::new(LinkedList::default()),
             bootinfo: None,
-            total_size: 0
+            total_size: 0,
         }
     }
 
     pub fn print_reg(&self) {
         for i in self.free_list.borrow().iter() {
-            kprintln!("{:?}", unsafe { &*i });
+            serial_info!("{:?}", unsafe { &*i });
         }
     }
 
@@ -44,7 +42,7 @@ impl<const PAGE_SIZE: u64> PageAlloc<PAGE_SIZE> {
             i += PAGE_SIZE;
             self.total_size += PAGE_SIZE;
         }
-        debug!("total size is {:?} MB", self.total_size / 1_000_000);
+        serial_debug!("total size is {:?} MB", self.total_size / 1_000_000);
 
         if i - end != 0 {
             debug!("left some memory on the table {:#02x}", i - end);

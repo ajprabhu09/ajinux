@@ -3,3 +3,6 @@ members = [
     "kernel",
     "os"
 ]
+default-members = [
+    "kernel",
+]

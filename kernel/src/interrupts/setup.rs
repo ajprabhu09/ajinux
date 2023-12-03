@@ -1,13 +1,10 @@
-
-
-
-use crate::devices::pic8259::*;
+use crate::devices::{pic8259::*, serial};
 
 use crate::interrupts::keyboard::keyboard_interrupt;
 use crate::interrupts::timer::timer_interrupt;
 
+use crate::{error, ksprintln, serial_info};
 use crate::{descriptors::idt::*, kprintln, sync::shitlock::Racy};
-use crate::{error};
 use lazy_static::lazy_static;
 
 lazy_static! {
@@ -24,11 +21,11 @@ extern "x86-interrupt" fn double_fault_handler(_frame: ExceptionStackFrame, _err
 extern "x86-interrupt" fn breakpoint_handler(_frame: ExceptionStackFrame) {}
 
 extern "x86-interrupt" fn segment_not_present_handler(_frame: ExceptionStackFrame, _err_code: u64) {
-    kprintln!("Segment not present error");
+    serial_info!("Segment not present error");
     // PIC.eoi(1);
 }
 extern "x86-interrupt" fn page_fault_handler(_frame: ExceptionStackFrame) {
-    kprintln!("Segment not present error");
+    serial_info!("Segment not present error");
     // PIC.eoi(1);
 }
 
