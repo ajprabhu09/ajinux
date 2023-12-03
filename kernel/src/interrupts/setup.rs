@@ -1,10 +1,10 @@
-use crate::devices::{pic8259::*, serial};
+use crate::devices::{pic8259::*};
 
 use crate::interrupts::keyboard::keyboard_interrupt;
 use crate::interrupts::timer::timer_interrupt;
 
-use crate::{error, ksprintln, serial_info};
-use crate::{descriptors::idt::*, kprintln, sync::shitlock::Racy};
+use crate::{error, serial_info};
+use crate::{descriptors::idt::*, sync::shitlock::Racy};
 use lazy_static::lazy_static;
 
 lazy_static! {

@@ -2,7 +2,7 @@ use core::fmt::Debug;
 
 use bitfield_struct::bitfield;
 
-use crate::{info, kprintln, utils::asm, ksprintln, serial_info};
+use crate::{utils::asm, serial_info};
 
 #[bitfield(u64)]
 pub struct GdtEntry {

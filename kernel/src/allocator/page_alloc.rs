@@ -4,7 +4,7 @@ use bootloader::BootInfo;
 
 use crate::{
     datastructures::no_alloc::linked_list::{LinkedList, Node},
-    debug, kprintln, ksprintln, serial_info, serial_debug,
+    debug, serial_info, serial_debug,
 };
 
 pub struct PageAlloc<const PAGE_SIZE: u64> {

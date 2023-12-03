@@ -103,10 +103,12 @@ impl GateType {
     pub const fn from_bits(val: u16) -> Self {
         let _v1 = 0xE << 8;
         let _v2 = 0xF << 8;
-        match val {
-            _v1 => Self::TrapGate,
-            _v2 => Self::InterruptGate,
-            _ => panic!("invalid gate type"),
+        if val == _v1 {
+            return Self::TrapGate;
+        } else if val == _v2 {
+            return Self::InterruptGate;
+        } else {
+            panic!("invalid gate type");
         }
     }
     pub const fn into_bits(self) -> u16 {

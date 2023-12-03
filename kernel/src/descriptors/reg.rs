@@ -53,5 +53,4 @@ macro_rules! set_reg64_impl {
 }
 get_reg_impl!("cs", CS);
 get_reg_impl!("ds", DS);
-
 set_reg64_impl!("cr0", CR0);
