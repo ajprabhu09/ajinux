@@ -14,6 +14,16 @@ pub struct PageAlloc<const PAGE_SIZE: u64> {
 }
 
 impl<const PAGE_SIZE: u64> PageAlloc<PAGE_SIZE> {
+    pub fn alloc_page(&mut self) -> *mut u8 {
+        self.total_size -= PAGE_SIZE;
+        return self.free_list.borrow_mut().pop_head() as *mut u8;
+    }
+
+    pub fn dealloc_page(&mut self, page: *mut u8) {
+        self.total_size += PAGE_SIZE;
+        self.free_list.borrow_mut().push_back(page as *mut Node<[u8;0]>);
+    }
+
     pub const fn default() -> Self {
         Self {
             free_list: RefCell::new(LinkedList::default()),

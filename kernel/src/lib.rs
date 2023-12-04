@@ -1,6 +1,7 @@
 #![no_std]
 #![no_main]
 #![feature(custom_test_frameworks)]
+#![feature(allocator_api)]
 #![test_runner(crate::test::test_runner)]
 #![reexport_test_harness_main = "test_main"]
 #![feature(abi_x86_interrupt)]
@@ -24,21 +25,57 @@ pub use core::{
     ptr::{null, null_mut},
 };
 
-use crate::{devices::vga::Color, io::writer::set_color};
+use bootloader::{BootInfo, bootinfo::{MemoryRegionType, self}};
+
+use crate::{devices::vga::Color, io::writer::set_color, allocator::kernel_alloc::ALLOC};
 pub mod allocator;
 pub mod cc;
 pub mod datastructures;
 pub mod io;
 pub mod logging;
 pub mod paging;
+pub mod process;
+
+
+pub static mut BOOT_INFO: Option<&'static BootInfo> = None;
+
+
+pub fn setup_boot_info(val: &'static BootInfo) {
+    unsafe { BOOT_INFO = Some(val) };
+}
+
+
+pub fn discover_pages() {
+    let bootinfo = unsafe { BOOT_INFO.unwrap() };
+    let usable_regions = bootinfo
+        .memory_map
+        .iter()
+        .filter(|region| region.region_type == MemoryRegionType::Usable);
+
+    for region in usable_regions {
+        serial_info!("Setting up apges in region {:?}", region);
+        unsafe {
+            ALLOC.add_region(
+                region.range.start_addr() + bootinfo.physical_memory_offset,
+                region.range.end_addr() + bootinfo.physical_memory_offset,
+            )
+        };
+    }
+}
+
 
 // This function is called on panic.
 #[panic_handler]
 pub fn panic(_info: &PanicInfo) -> ! {
     set_color(Color::pack(Color::Black, Color::Red));
-    kprint!("{}", _info);
+    ksprintln!("{}", _info);
     loop {}
 }
+
+
+
+
+
 #[cfg(test)]
 mod test {
     pub fn test_runner(tests: &[&dyn Fn()]) {

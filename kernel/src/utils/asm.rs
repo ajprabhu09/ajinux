@@ -49,12 +49,12 @@ pub unsafe fn inb(port: u16) -> u8 {
 }
 
 #[allow(dead_code)]
-pub unsafe fn disable_interrupts() {
-    asm!("cli")
+pub fn disable_interrupts() {
+    unsafe { asm!("cli") }
 }
 #[allow(dead_code)]
-pub unsafe fn enable_interrupts() {
-    asm!("sti")
+pub fn enable_interrupts() {
+    unsafe { asm!("sti") }
 }
 
 #[allow(dead_code)]

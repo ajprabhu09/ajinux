@@ -31,7 +31,7 @@ run-args = []
 
 # Additional arguments passed to the run command for test executables
 # Applies to `bootimage runner`
-test-args = []
+test-args = [ "-serial", "stdio"]
 
 # An exit code that should be considered as success for test executables
 # test-success-exit-code = {integer}

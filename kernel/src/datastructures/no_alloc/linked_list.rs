@@ -1,5 +1,7 @@
 use core::ptr::{null_mut, NonNull};
 
+use crate::serial_info;
+
 #[repr(C)]
 #[derive(Debug)]
 pub struct Node<H: Sized> {

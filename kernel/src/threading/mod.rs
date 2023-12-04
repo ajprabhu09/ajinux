@@ -1,9 +1,9 @@
 
 
 
-pub trait KThreadIface {
-    pub 
-}
+// pub trait KThreadIface {
+//     pub 
+// }
 
 pub struct KThread;
 

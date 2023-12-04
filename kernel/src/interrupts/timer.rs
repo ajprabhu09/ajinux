@@ -4,7 +4,7 @@ use crate::descriptors::idt::ExceptionStackFrame;
 use crate::devices::pit::PIT;
 use crate::interrupts::setup::PIC;
 
-pub static mut PIT_: PIT = PIT::new();
+pub static PIT_: PIT = PIT::new();
 
 pub struct TimerEvents {
     pub count: AtomicIsize,

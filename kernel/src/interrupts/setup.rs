@@ -25,7 +25,7 @@ extern "x86-interrupt" fn segment_not_present_handler(_frame: ExceptionStackFram
     // PIC.eoi(1);
 }
 extern "x86-interrupt" fn page_fault_handler(_frame: ExceptionStackFrame) {
-    serial_info!("Segment not present error");
+    serial_info!("page faulty");
     // PIC.eoi(1);
 }
 
