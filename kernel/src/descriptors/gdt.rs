@@ -2,7 +2,7 @@ use core::fmt::Debug;
 
 use bitfield_struct::bitfield;
 
-use crate::{info, println, utils::asm};
+use crate::{utils::asm, serial_info};
 
 #[bitfield(u64)]
 pub struct GdtEntry {
@@ -85,8 +85,8 @@ pub fn print_gdt() {
         let gdt = &*GlobalDescriptorTable::read();
         let mut count = 5;
         for (i, entry) in gdt.descriptors.iter().enumerate() {
-            if (entry.executable() == true) {
-                println!("{:?}, {:#?}", i, entry);
+            if entry.executable() == true {
+                serial_info!("{:?}, {:#?}", i, entry);
                 count -= 1;
                 if count == 0 {
                     break;
@@ -98,7 +98,7 @@ pub fn print_gdt() {
 
 #[test_case]
 pub fn test_gdtsize() {
-    info!("Testing GDT size");
+    serial_info!("Testing GDT size");
     assert_eq!(
         core::mem::size_of::<GlobalDescriptorTable>(),
         8192 * core::mem::size_of::<GdtEntry>()

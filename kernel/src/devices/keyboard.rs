@@ -1,9 +1,9 @@
-use core::slice::EscapeAscii;
-
+#![allow(dead_code)]
+#![allow(unused)]
 use bitfield_struct::bitfield;
 
 use super::{port::Port, vga::ConsoleDisplay};
-use crate::{datastructures::no_alloc::ringbuffer::RingBuf, error, info, io::writer::WRITER, print, println};
+use crate::{datastructures::no_alloc::ringbuffer::RingBuf, io::writer::WRITER};
 #[derive(Debug, Clone, Copy)]
 pub enum Key {
     Char(char),
@@ -491,6 +491,7 @@ impl Keyboard {
                             ']' => Some('}'),
                             '-' => Some('_'),
                             '=' => Some('+'),
+                            ';' => Some(':'),
                             _ => Some(c),
                         }
                     } else {
@@ -520,8 +521,6 @@ impl Keyboard {
         }
     }
     pub fn read_key(&mut self) -> KeyAction {
-        use Key::*;
-        use KeyAction::*;
         let scan = map_val_to_key_scan_code_1(self.scan_code());
         self.set_modifier(scan);
         scan

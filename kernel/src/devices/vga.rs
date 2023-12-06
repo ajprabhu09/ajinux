@@ -38,7 +38,7 @@ pub enum Color {
     White = 0xf,
 }
 
-type PackedColor = u8;
+pub type PackedColor = u8;
 
 impl Color {
     pub fn pack(left: Color, right: Color) -> PackedColor {
@@ -114,7 +114,7 @@ pub struct VGADisplay {
 pub const DEFAULT_BG_COLOR: Color = Color::Black;
 pub const DEFAULT_FG_COLOR: Color = Color::Cyan;
 
-type ConsoleErrType = &'static str;
+pub type ConsoleErrType = &'static str;
 pub trait ConsoleDisplay {
     fn put_byte(&mut self, ch: u8) -> Result<(), ConsoleErrType>;
     fn put_bytes(&mut self, ch: &[u8]) -> Result<(), ConsoleErrType>;
@@ -314,6 +314,6 @@ impl ConsoleDisplay for VGADisplay {
     fn clear(&mut self) {
         // This might not work sometimes
         self.buffer.buffer = [[Text::zero(); BUFFER_WIDTH]; BUFFER_HEIGHT];
-        self.set_cursor((0,0)).unwrap();
-   }
+        self.set_cursor((0, 0)).unwrap();
+    }
 }

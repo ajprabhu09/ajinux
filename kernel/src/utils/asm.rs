@@ -4,7 +4,7 @@ use core::arch::asm;
 
 use crate::{
     descriptors::{gdt::GdtPointer, idt::DescriptorPointer},
-    info, println,
+    info, serial_info,
 };
 
 pub unsafe fn outb(port: u16, val: u8) {
@@ -49,12 +49,12 @@ pub unsafe fn inb(port: u16) -> u8 {
 }
 
 #[allow(dead_code)]
-pub unsafe fn disable_interrupts() {
-    asm!("cli")
+pub fn disable_interrupts() {
+    unsafe { asm!("cli") }
 }
 #[allow(dead_code)]
-pub unsafe fn enable_interrupts() {
-    asm!("sti")
+pub fn enable_interrupts() {
+    unsafe { asm!("sti") }
 }
 
 #[allow(dead_code)]
@@ -75,7 +75,7 @@ pub unsafe fn sgdt() -> GdtPointer {
         offset: 0 as *const _,
     };
     asm!("sgdt [{}]", in(reg) &pointer, options(readonly, nostack, preserves_flags));
-    info!(" Pointer {:#?}", pointer);
+    serial_info!(" Pointer {:#?}", pointer);
     return pointer;
 }
 

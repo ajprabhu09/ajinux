@@ -1,4 +1,4 @@
-use super::segmentation::{GetReg, CS};
+use super::reg::{GetReg, CS};
 use crate::utils::asm::lidt;
 use bitfield_struct::bitfield;
 use core::fmt;
@@ -101,12 +101,14 @@ pub enum GateType {
 
 impl GateType {
     pub const fn from_bits(val: u16) -> Self {
-        let v1 = (0xE << 8);
-        let v2 = (0xF << 8);
-        match val {
-            v1 => Self::TrapGate,
-            v2 => Self::InterruptGate,
-            _ => panic!("invalid gate type"),
+        let _v1 = 0xE << 8;
+        let _v2 = 0xF << 8;
+        if val == _v1 {
+            return Self::TrapGate;
+        } else if val == _v2 {
+            return Self::InterruptGate;
+        } else {
+            panic!("invalid gate type");
         }
     }
     pub const fn into_bits(self) -> u16 {
