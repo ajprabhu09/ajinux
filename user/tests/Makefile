@@ -1,5 +1,7 @@
-TOP_DIR = ./user/tests
-INC_DIR = ./user/lib
+ROOT_DIR:=$(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
+
+TOP_DIR = $(ROOT_DIR)
+INC_DIR = $(ROOT_DIR)/../lib
 
 PROGS := simple 
 

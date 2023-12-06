@@ -1,8 +1,10 @@
 [workspace]
 members = [
     "kernel",
-    "os"
+    "os",
+    "user_tests"
 ]
 default-members = [
     "kernel",
+    "user_tests",
 ]
