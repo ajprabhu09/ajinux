@@ -3,10 +3,6 @@ ROOT_DIR:=$(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 TOP_DIR = $(ROOT_DIR)
 INC_DIR = $(ROOT_DIR)/../lib
 
-PROGS := simple 
-
-
-
 CC=clang
 LD=ld
 FLAGS = --target=x86_64-unknown-none -I$(INC_DIR) 
@@ -14,7 +10,7 @@ LDFLAGS =
 
 SRC := $(TOP_DIR)/progs
 
-TESTS := simple
+TESTS := simple other_simple
 PROG := $(patsubst %,$(SRC)/%.o,$(TESTS))
 
 

@@ -18,6 +18,10 @@ pub mod interrupts;
 pub mod sync;
 
 pub mod utils;
+pub mod loader;
+
+
+
 pub use core::{
     alloc::GlobalAlloc,
     fmt::Write,
@@ -71,10 +75,6 @@ pub fn panic(_info: &PanicInfo) -> ! {
     ksprintln!("{}", _info);
     loop {}
 }
-
-
-
-
 
 #[cfg(test)]
 mod test {

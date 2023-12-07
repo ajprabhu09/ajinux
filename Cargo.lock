@@ -57,6 +57,7 @@ dependencies = [
  "cc",
  "glob",
  "lazy_static",
+ "user_tests",
  "volatile",
 ]
 
@@ -83,6 +84,7 @@ dependencies = [
  "cc",
  "glob",
  "kernel",
+ "user_tests",
 ]
 
 [[package]]
