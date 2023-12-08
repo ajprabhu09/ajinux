@@ -15,6 +15,7 @@ use alloc::vec::Vec;
 use bootloader::BootInfo;
 // extern crate alloc;
 use kernel::{interrupts::timer::PIT_, io::reader::READER, *};
+use user_tests::bytes::simple;
 
 
 bootloader::entry_point!(kernel_main);
@@ -29,11 +30,6 @@ pub fn kernel_main(bootinfo: &'static BootInfo) -> ! {
     interrupts::setup::interrupt_setup();
     utils::asm::enable_interrupts(); // this fails if no handler is installed
     discover_pages();
-    
-    let mut x: Vec<i32, _> = Vec::new();
-    for i in 1..10000 {
-        x.push(100);
-    }
 
     // WRITER.take().display.clear();
     loop {
