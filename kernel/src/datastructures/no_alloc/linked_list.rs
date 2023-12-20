@@ -1,6 +1,6 @@
-use core::ptr::{null_mut, NonNull};
+use core::{ptr::{null, null_mut, NonNull}, fmt::Debug};
 
-use crate::serial_info;
+use crate::{logging::serial_print, serial_info, ksprintln};
 
 #[repr(C)]
 #[derive(Debug)]
@@ -29,7 +29,11 @@ pub struct LinkedList<H> {
     head: *mut Node<H>,
 }
 
-impl<H> LinkedList<H> {
+impl<H: Debug> LinkedList<H> {
+    pub fn empty(&self) -> bool {
+        return self.head.is_null();
+    }
+
     pub fn tail(&mut self) -> *mut Node<H> {
         match unsafe { self.head.as_mut() } {
             Some(data) => data.prev,
@@ -70,30 +74,37 @@ impl<H> LinkedList<H> {
             head.prev = new_tail as *mut _;
         }
     }
+    pub fn print_list(&self) {
+        if self.len() == 0 {
+            serial_info!("[]");
+            return;
+        }
+        serial_info!("[");
+        for x in self.iter() {
+            serial_info!("\t {:?} {:?}", x, unsafe{&*x});
+        }
+        serial_info!("]");
 
+    }
     pub fn pop_head(&mut self) -> *mut Node<H> {
-        let head = self.head;
-
-        if head.is_null() {
+        self.len -= 1;
+        let Some(head) = (unsafe { self.head.as_mut() }) else {
             return null_mut();
-        }
+        };
 
-        let head_next = unsafe { &*(head) }.next;
-        let head_prev = unsafe { &*(head) }.prev;
-
-        if head_prev == head {
-            // only one elem
+        if head.next == head.data_ptr() && head.prev == head.data_ptr() {
+            head.next = null_mut();
+            head.prev = null_mut();
             self.head = null_mut();
+            return head.data_ptr();
         }
-        unsafe {
-            head_prev.as_mut().unwrap().next = head_next;
-            head_next.as_mut().unwrap().prev = head_prev
-        };
-        unsafe {
-            head.as_mut().unwrap().next = null_mut();
-            head.as_mut().unwrap().prev = null_mut();
-        };
-        return head;
+
+        let next_node = unsafe { head.next.as_mut().expect("next ptr breaks invariant") };
+        let prev_node = unsafe { head.prev.as_mut().expect("prev ptr breaks invariant") };
+        prev_node.next = head.next;
+        next_node.prev = head.prev;
+        self.head = head.next;
+        return head.data_ptr();
     }
 
     pub fn len(&self) -> usize {
@@ -134,7 +145,7 @@ impl<H> Iterator for LLIter<H> {
                     (&*curr).next
                 };
                 self.curr = next;
-                return Some(curr);    
+                return Some(curr);
             }
 
             if curr == head {
@@ -146,7 +157,6 @@ impl<H> Iterator for LLIter<H> {
             };
             self.curr = next;
             return Some(curr);
-            
         }
         return None;
     }
@@ -200,10 +210,21 @@ pub fn test_linked_list() {
 
     assert_eq!(node, ll.head);
 
-    for l in ll {
-        serial_info!("{:?} {:?}", l, unsafe { &*l });
+    for l in ll.iter() {
+        serial_info!("Node: {:?} {:?}", l, unsafe { &*l });
     }
 
     serial_info!("{:?}", data);
-    // assert_eq!(node1, ll.tail());
+    assert_eq!(node2, ll.tail());
+    ll.pop_head();
+    ll.pop_head();
+    ll.pop_head();
+    ll.print_list();
+
+    // while !ll.empty() {
+    //     let val = ll.pop_head();
+    //     ksprintln!("{:?}", unsafe {&*val})
+    // }
+
+    // assert_eq!(ll.len(), 0);
 }

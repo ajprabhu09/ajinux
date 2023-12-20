@@ -1,0 +1,1 @@
+to add a test modifle TESTS variable in the Make file and add it to the user_test module build.rs

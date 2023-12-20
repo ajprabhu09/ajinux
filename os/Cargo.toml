@@ -7,8 +7,11 @@ edition = "2021"
 
 [dependencies]
 kernel = {path = "../kernel"}
-bootloader = {version = "0.9.23", features = ["map_physical_memory"]}
-
+user_tests = {path = "../user_tests"}
+bootloader = {version = "*", features = ["map_physical_memory",
+                                         "recursive_page_table"
+                                         ]}
+elfloader = "*"
 
 [build-dependencies]
 cc = "1.0"

@@ -17,7 +17,9 @@ pub mod devices;
 pub mod interrupts;
 pub mod sync;
 
+pub mod loader;
 pub mod utils;
+
 pub use core::{
     alloc::GlobalAlloc,
     fmt::Write,
@@ -25,9 +27,12 @@ pub use core::{
     ptr::{null, null_mut},
 };
 
-use bootloader::{BootInfo, bootinfo::{MemoryRegionType, self}};
+use bootloader::{
+    bootinfo::{self, MemoryRegionType},
+    BootInfo,
+};
 
-use crate::{devices::vga::Color, io::writer::set_color, allocator::kernel_alloc::ALLOC};
+use crate::{allocator::kernel_alloc::PAGE_ALLOC, devices::vga::Color, io::writer::set_color};
 pub mod allocator;
 pub mod cc;
 pub mod datastructures;
@@ -36,14 +41,14 @@ pub mod logging;
 pub mod paging;
 pub mod process;
 
-
 pub static mut BOOT_INFO: Option<&'static BootInfo> = None;
-
 
 pub fn setup_boot_info(val: &'static BootInfo) {
     unsafe { BOOT_INFO = Some(val) };
 }
-
+pub fn physical_memory_offset_val() -> u64 {
+    return unsafe { BOOT_INFO.unwrap().physical_memory_offset };
+}
 
 pub fn discover_pages() {
     let bootinfo = unsafe { BOOT_INFO.unwrap() };
@@ -55,14 +60,13 @@ pub fn discover_pages() {
     for region in usable_regions {
         serial_info!("Setting up apges in region {:?}", region);
         unsafe {
-            ALLOC.add_region(
+            PAGE_ALLOC.add_region(
                 region.range.start_addr() + bootinfo.physical_memory_offset,
                 region.range.end_addr() + bootinfo.physical_memory_offset,
             )
         };
     }
 }
-
 
 // This function is called on panic.
 #[panic_handler]
@@ -71,10 +75,6 @@ pub fn panic(_info: &PanicInfo) -> ! {
     ksprintln!("{}", _info);
     loop {}
 }
-
-
-
-
 
 #[cfg(test)]
 mod test {

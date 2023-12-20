@@ -10,17 +10,27 @@
 #![allow(clippy::needless_return)]
 #![feature(let_chains)]
 extern crate alloc;
-use alloc::vec::Vec;
 
+use alloc::{collections::binary_heap, vec::Vec};
 use bootloader::BootInfo;
+use elfloader::*;
 // extern crate alloc;
-use kernel::{interrupts::timer::PIT_, io::reader::READER, *};
+use kernel::loader::*;
+use kernel::{
+    addr::VirtAddr,
+    allocator::kernel_alloc::{KERNEL_ALLOC, PAGE_ALLOC},
+    descriptors::reg::{GetReg, CR0, CR3},
+    interrupts::timer::PIT_,
+    io::reader::READER,
+    loader::UserTestLoader,
+    paging::{Table, TableEntry},
+    *,
+};
+use user_tests::bytes::simple;
 
 bootloader::entry_point!(kernel_main);
 
-
 pub fn kernel_main(bootinfo: &'static BootInfo) -> ! {
-
     setup_boot_info(bootinfo);
     kprint!("\n\n");
     utils::asm::disable_interrupts(); // this fails if no handler is installed
@@ -28,13 +38,19 @@ pub fn kernel_main(bootinfo: &'static BootInfo) -> ! {
     interrupts::setup::interrupt_setup();
     utils::asm::enable_interrupts(); // this fails if no handler is installed
     discover_pages();
-    
-    let mut x: Vec<i32, _> = Vec::new();
-    for i in 1..10000 {
-        x.push(100);
-    }
-
     // WRITER.take().display.clear();
+
+    // let page_table = Table::from_addr::<512>(VirtAddr::as_canonical(CR3::get_reg()));
+    // let entries = page_table.entries.iter().filter(|x| x.present());
+    // // serial_info!("page: {:?}", page);
+    // for entry in entries.enumerate() {
+    //     serial_info!("ptr - {:?}  - {:?}", (entry.1 as *const TableEntry), entry);
+    // }
+    unsafe {
+        while PAGE_ALLOC.has_page() {
+            let page = PAGE_ALLOC.alloc_page();
+        }
+    }
     loop {
         READER.take().input.process_buf_wait();
     }
