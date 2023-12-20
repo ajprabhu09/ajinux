@@ -8,7 +8,6 @@ fn main() {
     // let x: i32 = "1asd".parse().unwrap();
     // panic!("hehehe");
 
-
     let x = Command::new("/usr/bin/make")
         .arg("-f")
         .arg("../user/tests/Makefile")

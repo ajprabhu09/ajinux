@@ -1,3 +1,5 @@
+#include "string.h"
+
 int a = 1;
 
 int caller() {

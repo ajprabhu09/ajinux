@@ -1,11 +1,13 @@
-use crate::devices::{pic8259::*};
+use crate::devices::pic8259::*;
 
 use crate::interrupts::keyboard::keyboard_interrupt;
 use crate::interrupts::timer::timer_interrupt;
 
-use crate::{error, serial_info};
 use crate::{descriptors::idt::*, sync::shitlock::Racy};
+use crate::{error, serial_info};
 use lazy_static::lazy_static;
+
+use super::page_fault::page_fault_handler;
 
 lazy_static! {
     static ref _IDT: Racy<InterruptDescriptorTable> = Racy::from(InterruptDescriptorTable::new());
@@ -22,10 +24,6 @@ extern "x86-interrupt" fn breakpoint_handler(_frame: ExceptionStackFrame) {}
 
 extern "x86-interrupt" fn segment_not_present_handler(_frame: ExceptionStackFrame, _err_code: u64) {
     serial_info!("Segment not present error");
-    // PIC.eoi(1);
-}
-extern "x86-interrupt" fn page_fault_handler(_frame: ExceptionStackFrame) {
-    serial_info!("page faulty");
     // PIC.eoi(1);
 }
 

@@ -2,3 +2,4 @@
 /.vscode
 user/tests/progs/*.out
 user/tests/*.o
+Scratch/

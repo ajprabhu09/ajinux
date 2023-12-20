@@ -3,8 +3,9 @@ use core::cell::RefCell;
 use bootloader::BootInfo;
 
 use crate::{
+    addr::VirtAddr,
     datastructures::no_alloc::linked_list::{LinkedList, Node},
-    debug, serial_info, serial_debug,
+    debug, serial_debug, serial_info,
 };
 
 pub struct PageAlloc<const PAGE_SIZE: u64> {
@@ -14,14 +15,24 @@ pub struct PageAlloc<const PAGE_SIZE: u64> {
 }
 
 impl<const PAGE_SIZE: u64> PageAlloc<PAGE_SIZE> {
+    pub fn has_page(&self) -> bool {
+        !self.free_list.borrow().empty()
+    }
+
     pub fn alloc_page(&mut self) -> *mut u8 {
         self.total_size -= PAGE_SIZE;
         return self.free_list.borrow_mut().pop_head() as *mut u8;
     }
 
+    pub fn alloc_page_virt_addr(&mut self) -> VirtAddr {
+        return VirtAddr::as_canonical(self.alloc_page() as u64);
+    }
+
     pub fn dealloc_page(&mut self, page: *mut u8) {
         self.total_size += PAGE_SIZE;
-        self.free_list.borrow_mut().push_back(page as *mut Node<[u8;0]>);
+        self.free_list
+            .borrow_mut()
+            .push_back(page as *mut Node<[u8; 0]>);
     }
 
     pub const fn default() -> Self {
