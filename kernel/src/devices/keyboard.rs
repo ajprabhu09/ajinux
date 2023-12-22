@@ -49,10 +49,10 @@ impl ConsoleInput for Keyboard {
     }
 }
 
-pub const TOP_ROW: &'static str = "qwertyuiop[]";
-pub const HOME_ROW: &'static str = "asdfghjkl;'`";
-pub const BOTTOM_ROW: &'static str = "zxcvbnm,./";
-pub const NUM_SHIFTER: &'static str = "~!@#$%^&*()_+";
+pub const TOP_ROW: &str = "qwertyuiop[]";
+pub const HOME_ROW: &str = "asdfghjkl;'`";
+pub const BOTTOM_ROW: &str = "zxcvbnm,./";
+pub const NUM_SHIFTER: &str = "~!@#$%^&*()_+";
 
 fn map_val_to_key_scan_code_1(code: u8) -> KeyAction {
     use Key::*;
@@ -60,7 +60,7 @@ fn map_val_to_key_scan_code_1(code: u8) -> KeyAction {
 
     let key = match code2 {
         0x01 => Esc,                                          // escape pressed
-        0x02..=0x0A => Char((code2 - 1 + '0' as u8) as char), // 1 pressed
+        0x02..=0x0A => Char((code2 - 1 + b'0') as char), // 1 pressed
         0x0B => Char('0'),                                    // 0 (zero) pressed
         0x0C => Char('-'),                                    // - pressed
         0x0D => Char('='),                                    // = pressed
@@ -483,7 +483,7 @@ impl Keyboard {
                                 if c == '0' {
                                     return Some(')');
                                 }
-                                let idx = (c as u8) - ('0' as u8);
+                                let idx = (c as u8) - b'0';
                                 return Some(NUM_SHIFTER.as_bytes()[idx as usize] as char);
                             }
                             '`' => Some('~'),

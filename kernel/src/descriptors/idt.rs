@@ -191,10 +191,10 @@ impl<F> Entry<F> {
         }
     }
     pub fn handler_addr(&self) -> u64 {
-        let addr = self.pointer_low as u64
+        
+        self.pointer_low as u64
             | (self.pointer_middle as u64) << 16
-            | (self.pointer_high as u64) << 32;
-        addr
+            | (self.pointer_high as u64) << 32
     }
 }
 

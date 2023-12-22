@@ -1,4 +1,4 @@
-use core::{fmt::Debug, ptr::slice_from_raw_parts};
+use core::{fmt::Debug};
 
 use bitfield_struct::bitfield;
 
@@ -85,7 +85,7 @@ pub struct Table<'a> {
 
 impl<'a> Table<'a> {
     pub fn from_addr<const COUNT: usize>(addr: VirtAddr) -> Self {
-        let ptr = unsafe { core::slice::from_raw_parts_mut(addr.0 as (*mut TableEntry), COUNT) };
+        let ptr = unsafe { core::slice::from_raw_parts_mut(addr.0 as *mut TableEntry, COUNT) };
         Table {
             entries: ptr,
             level: 4,

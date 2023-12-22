@@ -72,7 +72,7 @@ pub unsafe fn lidt(idt_p: &DescriptorPointer) {
 pub unsafe fn sgdt() -> GdtPointer {
     let pointer: GdtPointer = GdtPointer {
         size: 0,
-        offset: 0 as *const _,
+        offset: core::ptr::null(),
     };
     asm!("sgdt [{}]", in(reg) &pointer, options(readonly, nostack, preserves_flags));
     serial_info!(" Pointer {:#?}", pointer);

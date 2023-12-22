@@ -1,31 +1,31 @@
 use crate::{
     allocator::kernel_alloc::{PAGE_ALLOC, PAGE_SIZE},
     paging::{Table, TableEntry},
-    physical_memory_offset_val, serial_info, BOOT_INFO,
+    physical_memory_offset_val, serial_info,
 };
-use bootloader::BootInfo;
-use core::{default, fmt::Debug};
+
+use core::{fmt::Debug};
 
 #[derive(Clone, Copy)]
 pub struct VirtAddr(pub u64);
 
 impl VirtAddr {
     pub const fn as_canonical(v: u64) -> Self {
-        let shifter = (64 - 48);
+        let shifter = 64 - 48;
         let val = (((v << shifter) as i64) >> shifter) as u64;
         return Self(val);
     }
     pub fn map_addr(&self, p4: &mut Table) {
-        let mut table = p4;
+        let table = p4;
         let addr = self.0;
         // 00000000 00000000 | 0000000000000000000 1 1111 1111| 0000 00000000 00000000
         // sign (16)       | mask(9) |
-        let mask: u64 = 0b0000000000000000_111111111_000000000_000000000_000000000_000000000000;
+        let mask: u64 = 0b0000_0000_0000_0000_1111_1111_1000_0000_0000_0000_0000_0000_0000_0000_0000_0000;
         let first = (addr & (mask)) >> (27 + 12);
         let second = (addr & (mask >> 9)) >> (18 + 12);
         let third = (addr & (mask >> 18)) >> (9 + 12);
         let fourth = (addr & (mask >> 27)) >> (12);
-        let offset = addr & (0xFFF);
+        let _offset = addr & (0xFFF);
 
         let p3_table = table.next(first);
         if p3_table.is_none() {
@@ -73,16 +73,16 @@ impl VirtAddr {
     }
 
     pub fn to_phy_addr(self, p4: &Table) -> Option<PhyAddr> {
-        let mut table = p4;
+        let table = p4;
         let addr = self.0;
         // 00000000 00000000 | 0000000000000000000 1 1111 1111| 0000 00000000 00000000
         // sign (16)       | mask(9) |
-        let mask: u64 = 0b0000000000000000_111111111_000000000_000000000_000000000_000000000000;
+        let mask: u64 = 0b0000_0000_0000_0000_1111_1111_1000_0000_0000_0000_0000_0000_0000_0000_0000_0000;
         let first = (addr & (mask)) >> (27 + 12);
         let second = (addr & (mask >> 9)) >> (18 + 12);
         let third = (addr & (mask >> 18)) >> (9 + 12);
         let fourth = (addr & (mask >> 27)) >> (12);
-        let offset = addr & (0xFFF);
+        let _offset = addr & (0xFFF);
         serial_info!("1");
         let table2 = table.next(first)?;
         serial_info!("2");

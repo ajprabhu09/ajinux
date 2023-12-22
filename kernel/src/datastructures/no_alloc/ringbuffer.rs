@@ -45,9 +45,7 @@ where
             return None;
         }
         let head = self.buf[self.start];
-        if head.is_none() {
-            return None;
-        }
+        head?;
 
         let head = head.unwrap();
 

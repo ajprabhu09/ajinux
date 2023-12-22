@@ -11,9 +11,11 @@
 #![feature(let_chains)]
 extern crate alloc;
 
+use alloc::vec;
 use alloc::{collections::binary_heap, vec::Vec};
 use bootloader::BootInfo;
 use elfloader::*;
+use kernel::allocator::kernel_alloc::PAGE_SIZE;
 // extern crate alloc;
 use kernel::loader::*;
 use kernel::{
@@ -40,17 +42,15 @@ pub fn kernel_main(bootinfo: &'static BootInfo) -> ! {
     discover_pages();
     // WRITER.take().display.clear();
 
-    // let page_table = Table::from_addr::<512>(VirtAddr::as_canonical(CR3::get_reg()));
-    // let entries = page_table.entries.iter().filter(|x| x.present());
+    let page_table = Table::from_addr::<512>(VirtAddr::as_canonical(CR3::get_reg()));
+    let entries = page_table.entries.iter().filter(|x| x.present());
     // // serial_info!("page: {:?}", page);
-    // for entry in entries.enumerate() {
-    //     serial_info!("ptr - {:?}  - {:?}", (entry.1 as *const TableEntry), entry);
-    // }
-    unsafe {
-        while PAGE_ALLOC.has_page() {
-            let page = PAGE_ALLOC.alloc_page();
-        }
+    for entry in entries.enumerate() {
+        serial_info!("ptr - {:?}  - {:?}", (entry.1 as *const TableEntry), entry);
     }
+
+    let vec = vec![10; 1 << 14];
+
     loop {
         READER.take().input.process_buf_wait();
     }

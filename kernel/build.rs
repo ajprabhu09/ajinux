@@ -1,4 +1,4 @@
-use glob;
+
 fn main() {
     // This does not work yet!
     // TODO: Change this to /opt/homebrew/Cellar/x86_64-unknown-linux-gnu/7.2.0/bin/x86_64-unknown-linux-gnu-gcc

@@ -26,13 +26,13 @@ impl SerialCom {
         let port = self.port.0;
         Port(port + 1).send_byte(0x00); // Disable all interrupts
         Port(port + 3).send_byte(0x80); // Enable DLAB (set baud rate divisor)
-        Port(port + 0).send_byte(0x03); // Set divisor to 3 (lo byte) 38400 baud
+        Port(port).send_byte(0x03); // Set divisor to 3 (lo byte) 38400 baud
         Port(port + 1).send_byte(0x00); //                  (hi byte)
         Port(port + 3).send_byte(0x03); // 8 bits, no parity, one stop bit
         Port(port + 2).send_byte(0xC7); // Enable FIFO, clear them, with 14-byte threshold
         Port(port + 4).send_byte(0x0B); // IRQs enabled, RTS/DSR set
         Port(port + 4).send_byte(0x1E); // Set in loopback mode, test the serial chip
-        Port(port + 0).send_byte(0xAE); // Test serial chip (send byte 0xAE and check if serial returns same byte)
+        Port(port).send_byte(0xAE); // Test serial chip (send byte 0xAE and check if serial returns same byte)
 
         if self.port.read_byte() != 0xAE {
             return Err("unable to setup serial port");

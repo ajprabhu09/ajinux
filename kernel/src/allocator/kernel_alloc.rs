@@ -1,12 +1,12 @@
 use core::{
-    alloc::{Allocator, GlobalAlloc},
+    alloc::{GlobalAlloc},
     cell::UnsafeCell,
-    ptr::{null_mut, NonNull},
+    ptr::{null_mut},
 };
 
 use crate::serial_info;
 
-use super::page_alloc::PageAlloc;
+use super::physical_mem::PhysicalMemAllocator;
 
 pub struct KernelAllocator {
     heap_start: UnsafeCell<*mut u8>,
@@ -15,7 +15,7 @@ pub struct KernelAllocator {
 
 pub const PAGE_SIZE: u64 = 4096;
 
-pub static mut PAGE_ALLOC: PageAlloc<PAGE_SIZE> = PageAlloc::default();
+pub static mut PAGE_ALLOC: PhysicalMemAllocator = PhysicalMemAllocator::default();
 
 // TODO: change
 const KERNEL_HEAP_START_DEFAULT: *mut u8 = null_mut();
@@ -36,36 +36,36 @@ impl KernelAllocator {
 unsafe impl Sync for KernelAllocator {}
 
 unsafe impl GlobalAlloc for KernelAllocator {
-    unsafe fn alloc(&self, layout: core::alloc::Layout) -> *mut u8 {
-        return PAGE_ALLOC.alloc_page();
+    unsafe fn alloc(&self, _layout: core::alloc::Layout) -> *mut u8 {
+        return PAGE_ALLOC.alloc(_layout.size()).0;
     }
 
-    unsafe fn dealloc(&self, ptr: *mut u8, layout: core::alloc::Layout) {
+    unsafe fn dealloc(&self, ptr: *mut u8, _layout: core::alloc::Layout) {
         serial_info!("dealloc ran dremaining size: {:?} B", unsafe {
             PAGE_ALLOC.total_size
         });
-        PAGE_ALLOC.dealloc_page(ptr)
+        PAGE_ALLOC.dealloc(ptr)
     }
 }
 
-unsafe impl Allocator for KernelAllocator {
-    fn allocate(
-        &self,
-        layout: core::alloc::Layout,
-    ) -> Result<core::ptr::NonNull<[u8]>, core::alloc::AllocError> {
-        serial_info!("alloc ran: remaining size: {:?} B", unsafe {
-            PAGE_ALLOC.total_size
-        });
-        let page = unsafe { (PAGE_ALLOC.alloc_page()) };
-        let allocation = unsafe { core::slice::from_raw_parts_mut(page, layout.align()) };
-        return Ok(unsafe { NonNull::new_unchecked(allocation) });
-    }
+// unsafe impl Allocator for KernelAllocator {
+//     fn allocate(
+//         &self,
+//         layout: core::alloc::Layout,
+//     ) -> Result<core::ptr::NonNull<[u8]>, core::alloc::AllocError> {
+//         serial_info!("alloc ran: remaining size: {:?} B", unsafe {
+//             PAGE_ALLOC.total_size
+//         });
+//         let page = unsafe { (PAGE_ALLOC.alloc_page()) };
+//         let allocation = unsafe { core::slice::from_raw_parts_mut(page, layout.align()) };
+//         return Ok(unsafe { NonNull::new_unchecked(allocation) });
+//     }
 
-    unsafe fn deallocate(&self, ptr: core::ptr::NonNull<u8>, layout: core::alloc::Layout) {
-        serial_info!("dealloc ran dremaining size: {:?} B", unsafe {
-            PAGE_ALLOC.total_size
-        });
-        let page = ptr.as_ptr();
-        PAGE_ALLOC.dealloc_page(page)
-    }
-}
+//     unsafe fn deallocate(&self, ptr: core::ptr::NonNull<u8>, layout: core::alloc::Layout) {
+//         serial_info!("dealloc ran dremaining size: {:?} B", unsafe {
+//             PAGE_ALLOC.total_size
+//         });
+//         let page = ptr.as_ptr();
+//         PAGE_ALLOC.dealloc_page(page)
+//     }
+// }
