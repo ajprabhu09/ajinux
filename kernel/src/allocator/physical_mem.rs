@@ -278,6 +278,8 @@ mod test {
                 PhysicalMemAllocator::round_up((PAGE_SIZE as usize) + size_of::<Node<Header>>() + 8, 16)
                     as u64
             );
+
+            assert_eq!(PhysicalMemAllocator::round_up(size_of::<Node<Header>>() + 8, 16), 32);
             PAGE_ALLOC.dealloc(page);
             assert_eq!(PAGE_ALLOC.generic_free_list.borrow().len(), 3);
         }
