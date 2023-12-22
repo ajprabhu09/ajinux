@@ -20,7 +20,7 @@ use kernel::allocator::kernel_alloc::PAGE_SIZE;
 use kernel::loader::*;
 use kernel::{
     addr::VirtAddr,
-    allocator::kernel_alloc::{KERNEL_ALLOC, PAGE_ALLOC},
+    allocator::kernel_alloc::{KERNEL_ALLOC, LMM_ALLOC},
     descriptors::reg::{GetReg, CR0, CR3},
     interrupts::timer::PIT_,
     io::reader::READER,

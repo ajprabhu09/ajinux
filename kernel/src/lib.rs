@@ -32,7 +32,7 @@ use bootloader::{
     BootInfo,
 };
 
-use crate::{allocator::kernel_alloc::PAGE_ALLOC, devices::vga::Color, io::writer::set_color};
+use crate::{devices::vga::Color, io::writer::set_color};
 pub mod allocator;
 pub mod cc;
 pub mod datastructures;
@@ -57,14 +57,15 @@ pub fn discover_pages() {
         .iter()
         .filter(|region| region.region_type == MemoryRegionType::Usable);
 
+    // BUG: LMM will not work if this is not done
     for region in usable_regions {
         serial_info!("Setting up apges in region {:?}", region);
-        unsafe {
-            PAGE_ALLOC.add_region(
-                region.range.start_addr() + bootinfo.physical_memory_offset,
-                region.range.end_addr() + bootinfo.physical_memory_offset,
-            )
-        };
+        // unsafe {
+        //     LMM_ALLOC.add_region(
+        //         region.range.start_addr() + bootinfo.physical_memory_offset,
+        //         region.range.end_addr() + bootinfo.physical_memory_offset,
+        //     )
+        // };
     }
 }
 

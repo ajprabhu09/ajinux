@@ -14,17 +14,17 @@ pub struct Node<H: Sized> {
 }
 
 impl<H> Node<H> {
-    pub fn data_ptr(&mut self) -> *mut () {
+    pub fn data_ptr_skip_header(&mut self) -> *mut () {
         return core::ptr::addr_of_mut!(self.next) as *mut ();
     }
     pub fn from(val: *mut u8) -> *mut Node<H> {
         val as *mut Node<H>
     }
-    pub const fn untype_ptr_mut(&mut self) -> *mut () {
-        self as *mut Node<H> as *mut ()
+    pub const fn untype_ptr_mut(&mut self) -> *mut Node<H>{
+        self as *mut Node<H>
     }
-    pub const fn untype_ptr(&self) -> *const () {
-        self as *const Node<H> as *const ()
+    pub const fn untype_ptr(&self) -> *const Node<H>{
+        self as *const Node<H>
     }
 }
 

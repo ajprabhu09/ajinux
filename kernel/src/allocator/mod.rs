@@ -1,2 +1,3 @@
 pub mod kernel_alloc;
-pub mod physical_mem;
+// pub mod lmm_allocator;
+pub mod physical_mem_manager;

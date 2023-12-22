@@ -6,7 +6,6 @@ use core::{
 
 use crate::serial_info;
 
-use super::physical_mem::PhysicalMemAllocator;
 
 pub struct KernelAllocator {
     heap_start: UnsafeCell<*mut u8>,
@@ -15,7 +14,6 @@ pub struct KernelAllocator {
 
 pub const PAGE_SIZE: u64 = 4096;
 
-pub static mut PAGE_ALLOC: PhysicalMemAllocator = PhysicalMemAllocator::default();
 
 // TODO: change
 const KERNEL_HEAP_START_DEFAULT: *mut u8 = null_mut();
@@ -37,14 +35,10 @@ unsafe impl Sync for KernelAllocator {}
 
 unsafe impl GlobalAlloc for KernelAllocator {
     unsafe fn alloc(&self, _layout: core::alloc::Layout) -> *mut u8 {
-        return PAGE_ALLOC.alloc(_layout.size()).0;
+        return null_mut();
     }
 
     unsafe fn dealloc(&self, ptr: *mut u8, _layout: core::alloc::Layout) {
-        serial_info!("dealloc ran dremaining size: {:?} B", unsafe {
-            PAGE_ALLOC.total_size
-        });
-        PAGE_ALLOC.dealloc(ptr)
     }
 }
 

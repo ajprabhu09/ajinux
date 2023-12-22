@@ -46,14 +46,14 @@ impl Debug for Header {
 
 
 
-pub struct PhysicalMemAllocator {
+pub struct LmmAllocator {
     pub generic_free_list: RefCell<LinkedList<Header>>,
     pub page_free_list: RefCell<LinkedList<[u8;0]>>,
     pub bootinfo: Option<&'static BootInfo>,
     pub total_size: u64,
 }
 
-impl PhysicalMemAllocator {
+impl LmmAllocator {
     // pub fn has_page(&self) -> bool {
     //     !self.generic_free_list.borrow().empty()
     // }
@@ -157,7 +157,7 @@ impl PhysicalMemAllocator {
         serial_debug!("LEFT OVER: {:?}", left_over);
         self.generic_free_list.borrow().print_ptrlist(4);
 
-        return (node_ref.data_ptr() as *mut u8, (rounded_size - 8) as isize);
+        return (node_ref.data_ptr_skip_header() as *mut u8, (rounded_size - 8) as isize);
     }
 
     pub fn alloc_page_virt_addr(&mut self) -> VirtAddr {
@@ -208,7 +208,7 @@ impl Debug for Node<Header> {
             .field("next", &self.next)
             .field("prev", &self.prev)
             .field("payload", &".....")
-            .field("footer", &PhysicalMemAllocator::footer(self.untype_ptr() as *mut _))
+            .field("footer", &LmmAllocator::footer(self.untype_ptr() as *mut _))
             .finish()
     }
 }
@@ -230,11 +230,12 @@ impl LinkedList<Header> {
 #[cfg(test)]
 mod test {
     use core::mem::size_of;
+    pub static mut LMM_ALLOC: LmmAllocator = LmmAllocator::default();
 
     use crate::{
         allocator::{
-            kernel_alloc::{PAGE_ALLOC, PAGE_SIZE},
-            physical_mem::PhysicalMemAllocator,
+            kernel_alloc::{PAGE_SIZE},
+            lmm_allocator::LmmAllocator,
         },
         datastructures::no_alloc::linked_list::Node,
         serial_info,
@@ -253,7 +254,7 @@ mod test {
     pub fn test_page_alignment_for_simple_alloc() {
         unsafe {
             serial_debug!("Testing page alignment");
-            let a = PAGE_ALLOC.alloc(PAGE_SIZE as usize);
+            let a = LMM_ALLOC.alloc(PAGE_SIZE as usize);
             serial_info!("got pointer and size {:?} ", a);
 
         }
@@ -263,10 +264,10 @@ mod test {
     pub fn test_allocation() {
         serial_info!("Testing Allocattion for pAGE Allocator");
         unsafe {
-            PAGE_ALLOC.generic_free_list.borrow().print_list();
-            let page = PAGE_ALLOC.alloc_page();
-            PAGE_ALLOC.generic_free_list.borrow().print_list();
-            assert_eq!(PAGE_ALLOC.generic_free_list.borrow_mut().len(), 2);
+            LMM_ALLOC.generic_free_list.borrow().print_list();
+            let page = LMM_ALLOC.alloc_page();
+            LMM_ALLOC.generic_free_list.borrow().print_list();
+            assert_eq!(LMM_ALLOC.generic_free_list.borrow_mut().len(), 2);
 
             serial_info!("{:?}", page);
             assert!(!page.is_null());
@@ -275,13 +276,13 @@ mod test {
             assert!(head.header.allocated());
             assert_eq!(
                 head.header.size(),
-                PhysicalMemAllocator::round_up((PAGE_SIZE as usize) + size_of::<Node<Header>>() + 8, 16)
+                LmmAllocator::round_up((PAGE_SIZE as usize) + size_of::<Node<Header>>() + 8, 16)
                     as u64
             );
 
-            assert_eq!(PhysicalMemAllocator::round_up(size_of::<Node<Header>>() + 8, 16), 32);
-            PAGE_ALLOC.dealloc(page);
-            assert_eq!(PAGE_ALLOC.generic_free_list.borrow().len(), 3);
+            assert_eq!(LmmAllocator::round_up(size_of::<Node<Header>>() + 8, 16), 32);
+            LMM_ALLOC.dealloc(page);
+            assert_eq!(LMM_ALLOC.generic_free_list.borrow().len(), 3);
         }
     }
 }

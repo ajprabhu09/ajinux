@@ -1,5 +1,5 @@
 use crate::{
-    allocator::kernel_alloc::{PAGE_ALLOC, PAGE_SIZE},
+    allocator::kernel_alloc::{PAGE_SIZE},
     paging::{Table, TableEntry},
     physical_memory_offset_val, serial_info,
 };
@@ -16,60 +16,62 @@ impl VirtAddr {
         return Self(val);
     }
     pub fn map_addr(&self, p4: &mut Table) {
-        let table = p4;
-        let addr = self.0;
-        // 00000000 00000000 | 0000000000000000000 1 1111 1111| 0000 00000000 00000000
-        // sign (16)       | mask(9) |
-        let mask: u64 = 0b0000_0000_0000_0000_1111_1111_1000_0000_0000_0000_0000_0000_0000_0000_0000_0000;
-        let first = (addr & (mask)) >> (27 + 12);
-        let second = (addr & (mask >> 9)) >> (18 + 12);
-        let third = (addr & (mask >> 18)) >> (9 + 12);
-        let fourth = (addr & (mask >> 27)) >> (12);
-        let _offset = addr & (0xFFF);
+        // TODO: new allocator
+        // let table = p4;
+        // let addr = self.0;
+        // // 00000000 00000000 | 0000000000000000000 1 1111 1111| 0000 00000000 00000000
+        // // sign (16)       | mask(9) |
+        // let mask: u64 = 0b0000_0000_0000_0000_1111_1111_1000_0000_0000_0000_0000_0000_0000_0000_0000_0000;
+        // let first = (addr & (mask)) >> (27 + 12);
+        // let second = (addr & (mask >> 9)) >> (18 + 12);
+        // let third = (addr & (mask >> 18)) >> (9 + 12);
+        // let fourth = (addr & (mask >> 27)) >> (12);
+        // let _offset = addr & (0xFFF);
 
-        let p3_table = table.next(first);
-        if p3_table.is_none() {
-            // first entry leve
-            let page = unsafe { PAGE_ALLOC.alloc_page_virt_addr() };
-            page.map_addr(table);
-            table.set_entry(
-                first,
-                TableEntry::new().with_present(true).with_virt_addr(page),
-            );
-        }
-        let mut p3_table = table.next(first).expect("table3 should have been mapped");
+        // let p3_table = table.next(first);
+        // if p3_table.is_none() {
+        //     // first entry leve
+        //     let page = unsafe { LMM_ALLOC.alloc_page_virt_addr() };
+        //     page.map_addr(table);
+        //     table.set_entry(
+        //         first,
+        //         TableEntry::new().with_present(true).with_virt_addr(page),
+        //     );
+        // }
+        // let mut p3_table = table.next(first).expect("table3 should have been mapped");
 
-        let p2_table = p3_table.next(second);
-        if p2_table.is_none() {
-            // first entry leve
-            let page = unsafe { PAGE_ALLOC.alloc_page_virt_addr() };
-            page.map_addr(table);
-            p3_table.set_entry(
-                second,
-                TableEntry::new().with_present(true).with_virt_addr(page),
-            );
-        }
-        let mut p2_table = table.next(first).expect("table2 should have been mapped");
+        // let p2_table = p3_table.next(second);
+        // if p2_table.is_none() {
+        //     // first entry leve
+        //     let page = unsafe { LMM_ALLOC.alloc_page_virt_addr() };
+        //     page.map_addr(table);
+        //     p3_table.set_entry(
+        //         second,
+        //         TableEntry::new().with_present(true).with_virt_addr(page),
+        //     );
+        // }
+        // let mut p2_table = table.next(first).expect("table2 should have been mapped");
 
-        let p1_table = p2_table.next(third);
-        if p1_table.is_none() {
-            // first entry leve
-            let page = unsafe { PAGE_ALLOC.alloc_page_virt_addr() };
-            page.map_addr(table);
-            p2_table.set_entry(
-                third,
-                TableEntry::new().with_present(true).with_virt_addr(page),
-            );
-        }
-        let mut p1_table = table.next(first).expect("table2 should have been mapped");
+        // let p1_table = p2_table.next(third);
+        // if p1_table.is_none() {
+        //     // first entry leve
+        //     let page = unsafe { LMM_ALLOC.alloc_page_virt_addr() };
+        //     page.map_addr(table);
+        //     p2_table.set_entry(
+        //         third,
+        //         TableEntry::new().with_present(true).with_virt_addr(page),
+        //     );
+        // }
+        // let mut p1_table = table.next(first).expect("table2 should have been mapped");
 
-        let page = unsafe { PAGE_ALLOC.alloc_page_virt_addr() };
-        p1_table.set_entry(
-            fourth,
-            TableEntry::new()
-                .with_present(true)
-                .with_address((page.0 + physical_memory_offset_val()) / PAGE_SIZE),
-        );
+        // let page = VirtAddr::as_canonical(0);
+        // // unsafe { LMM_ALLOC.alloc_page_virt_addr() }; //TODO: fix
+        // p1_table.set_entry(
+        //     fourth,
+        //     TableEntry::new()
+        //         .with_present(true)
+        //         .with_address((page.0 + physical_memory_offset_val()) / PAGE_SIZE),
+        // );
     }
 
     pub fn to_phy_addr(self, p4: &Table) -> Option<PhyAddr> {
