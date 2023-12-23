@@ -1,9 +1,6 @@
-use core::{
-    fmt::Debug,
-    ptr::{null_mut},
-};
+use core::{fmt::Debug, ptr::null_mut};
 
-use crate::{serial_error, serial_info, utils::ptr_utils::{as_ref_mut}};
+use crate::{serial_error, serial_info, utils::ptr_utils::as_ref_mut};
 extern crate static_assertions as sa;
 #[repr(C)]
 // #[derive(Debug)]
@@ -20,10 +17,10 @@ impl<H> Node<H> {
     pub fn from(val: *mut u8) -> *mut Node<H> {
         val as *mut Node<H>
     }
-    pub const fn untype_ptr_mut(&mut self) -> *mut Node<H>{
+    pub const fn untype_ptr_mut(&mut self) -> *mut Node<H> {
         self as *mut Node<H>
     }
-    pub const fn untype_ptr(&self) -> *const Node<H>{
+    pub const fn untype_ptr(&self) -> *const Node<H> {
         self as *const Node<H>
     }
 }
@@ -228,7 +225,7 @@ impl<H> IntoIterator for LinkedList<H> {
 }
 #[cfg(test)]
 mod tests {
-    use core::ptr::{null_mut};
+    use core::ptr::null_mut;
 
     use crate::{
         datastructures::no_alloc::linked_list::{LinkedList, Node},
@@ -243,7 +240,6 @@ mod tests {
 
     #[test_case]
     pub fn test_linked_list() {
-        
         serial_info!("Testing linked list");
         type H = [u8; 0];
         type Np = *mut Node<H>;

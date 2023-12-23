@@ -1,4 +1,4 @@
-use core::{fmt::Debug};
+use core::fmt::Debug;
 
 use bitfield_struct::bitfield;
 

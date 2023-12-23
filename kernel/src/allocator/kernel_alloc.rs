@@ -1,11 +1,6 @@
-use core::{
-    alloc::{GlobalAlloc},
-    cell::UnsafeCell,
-    ptr::{null_mut},
-};
+use core::{alloc::GlobalAlloc, cell::UnsafeCell, ptr::null_mut};
 
 use crate::serial_info;
-
 
 pub struct KernelAllocator {
     heap_start: UnsafeCell<*mut u8>,
@@ -13,7 +8,6 @@ pub struct KernelAllocator {
 }
 
 pub const PAGE_SIZE: u64 = 4096;
-
 
 // TODO: change
 const KERNEL_HEAP_START_DEFAULT: *mut u8 = null_mut();
@@ -38,8 +32,7 @@ unsafe impl GlobalAlloc for KernelAllocator {
         return null_mut();
     }
 
-    unsafe fn dealloc(&self, ptr: *mut u8, _layout: core::alloc::Layout) {
-    }
+    unsafe fn dealloc(&self, ptr: *mut u8, _layout: core::alloc::Layout) {}
 }
 
 // unsafe impl Allocator for KernelAllocator {

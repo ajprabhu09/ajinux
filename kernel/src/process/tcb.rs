@@ -1,5 +1,3 @@
-
-
 #[repr(C)]
 struct TaskControlBlock {
     thread_id: usize,

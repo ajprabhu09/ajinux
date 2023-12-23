@@ -59,13 +59,13 @@ fn map_val_to_key_scan_code_1(code: u8) -> KeyAction {
     let code2 = code & !(1 << 7);
 
     let key = match code2 {
-        0x01 => Esc,                                          // escape pressed
+        0x01 => Esc,                                     // escape pressed
         0x02..=0x0A => Char((code2 - 1 + b'0') as char), // 1 pressed
-        0x0B => Char('0'),                                    // 0 (zero) pressed
-        0x0C => Char('-'),                                    // - pressed
-        0x0D => Char('='),                                    // = pressed
-        0x0E => Char('\x08'),                                 // backspace pressed TODO: check
-        0x0F => Char('\t'),                                   // tab pressed
+        0x0B => Char('0'),                               // 0 (zero) pressed
+        0x0C => Char('-'),                               // - pressed
+        0x0D => Char('='),                               // = pressed
+        0x0E => Char('\x08'),                            // backspace pressed TODO: check
+        0x0F => Char('\t'),                              // tab pressed
         0x10..=0x1B => Char(TOP_ROW.as_bytes()[(code2 - 0x10) as usize] as char), // Q pressed
         // 0x11 => , // W pressed
         // 0x12 => , // E pressed

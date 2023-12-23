@@ -1,10 +1,10 @@
 use crate::{
-    allocator::kernel_alloc::{PAGE_SIZE},
+    allocator::kernel_alloc::PAGE_SIZE,
     paging::{Table, TableEntry},
     physical_memory_offset_val, serial_info,
 };
 
-use core::{fmt::Debug};
+use core::fmt::Debug;
 
 #[derive(Clone, Copy)]
 pub struct VirtAddr(pub u64);
@@ -79,7 +79,8 @@ impl VirtAddr {
         let addr = self.0;
         // 00000000 00000000 | 0000000000000000000 1 1111 1111| 0000 00000000 00000000
         // sign (16)       | mask(9) |
-        let mask: u64 = 0b0000_0000_0000_0000_1111_1111_1000_0000_0000_0000_0000_0000_0000_0000_0000_0000;
+        let mask: u64 =
+            0b0000_0000_0000_0000_1111_1111_1000_0000_0000_0000_0000_0000_0000_0000_0000_0000;
         let first = (addr & (mask)) >> (27 + 12);
         let second = (addr & (mask >> 9)) >> (18 + 12);
         let third = (addr & (mask >> 18)) >> (9 + 12);

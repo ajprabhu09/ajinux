@@ -1,5 +1,3 @@
-
-
 use user_tests::bytes::*;
 
 pub struct Program(pub *const u8);

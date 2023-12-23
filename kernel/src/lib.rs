@@ -27,12 +27,9 @@ pub use core::{
     ptr::{null, null_mut},
 };
 
-use bootloader::{
-    bootinfo::{MemoryRegionType},
-    BootInfo,
-};
+use bootloader::{bootinfo::MemoryRegionType, BootInfo};
 
-use crate::{devices::vga::Color, io::writer::set_color};
+use crate::{allocator::physical_mem_manager::PHY_MM, devices::vga::Color, io::writer::set_color};
 pub mod allocator;
 pub mod cc;
 pub mod datastructures;
@@ -59,7 +56,14 @@ pub fn discover_pages() {
 
     // BUG: LMM will not work if this is not done
     for region in usable_regions {
-        serial_info!("Setting up apges in region {:?}", region);
+        serial_info!("Setting up Manager in region {:?}", region);
+        unsafe {
+            PHY_MM.add_region(
+                region.range.start_addr() + physical_memory_offset_val(),
+                region.range.end_addr() + physical_memory_offset_val(),
+            )
+        };
+
         // unsafe {
         //     LMM_ALLOC.add_region(
         //         region.range.start_addr() + bootinfo.physical_memory_offset,
@@ -80,7 +84,6 @@ pub fn panic(_info: &PanicInfo) -> ! {
 #[cfg(test)]
 mod test {
     pub fn test_runner(tests: &[&dyn Fn()]) {
-        
         serial_info!("Running {} tests", tests.len());
 
         for test in tests {
@@ -90,15 +93,9 @@ mod test {
         }
     }
 
-    use bootloader::{BootInfo};
+    use bootloader::BootInfo;
     // extern crate alloc;
-    use crate::{
-        interrupts::timer::PIT_,
-        io::{
-            reader::READER,
-        },
-        *,
-    };
+    use crate::{interrupts::timer::PIT_, io::reader::READER, *};
 
     use crate::{interrupts, kprint, utils};
 
